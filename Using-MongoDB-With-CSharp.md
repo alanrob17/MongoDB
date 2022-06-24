@@ -1,6 +1,8 @@
 # Using MongoDB with C \#
 
-We will create an ASP.Net Core 6.0 console application. named **MongoDbDemoApp**.
+Video tutorial: IAmTimCorey - How to Connect MongoDB to C# the Easy Way (Sandbox\Mongo\MongoDbDemoApp).
+
+We will create an ASP.Net Core 6.0 console application named **MongoDbDemoApp**.
 
 **Note:** in this solution we are using the file scope not block scope. This isn't the way I usually work.
 
@@ -407,4 +409,152 @@ We will go back to our **MongoDBDemo** project and comment out our database conn
 
 We also need to change our dependencies by adding our **MongoDataAccess** library. We do this by adding a project reference to the library.
 
-Time 41.44
+We have to add the following **using** statements.
+
+```csharp
+    using MongoDataAccess.DataAccess;
+    using MongoDataAccess.Models;
+```
+
+### Inserting a User
+
+```csharp
+    var db = new ChoreDataAccess();
+
+    await db.CreateUser(new UserModel() { FirstName = "Alan", LastName = "Robson" });
+```
+
+Here we open our database connection and then use it to create a new user.
+
+**Note:** all of our database methods are **async** methods so we need to use the ``await`` keyword in front of our database interactions.
+
+### Inserting a Chore
+
+With our database connection still open we can add a chore to the current user. First, we must get our users collection and in our case we are going to select the first user to attach a chore to.
+
+```csharp
+    var users = await db.GetAllUsers();
+
+    var chore = new ChoreModel()
+    {
+        AssignedTo = users.First(),
+        ChoreText = "Mow the Lawn",
+        FrequencyInDays = 7
+    };
+
+    await db.CreateChore(chore);
+```
+
+### Completing Chore history
+
+We also need to update the chore if that chore has been completed. We can do this with.
+
+```csharp
+    public async Task CompleteChore(ChoreModel chore)
+    {
+        var choresCollection = ConnectToMongo<ChoreModel>(ChoreCollection);
+        var filter = Builders<ChoreModel>.Filter.Eq("Id", chore.Id);
+        await choresCollection.ReplaceOneAsync(filter, chore);
+
+        var choreHistoryCollection = ConnectToMongo<ChoreHistoryModel>(ChoreHistoryCollection);
+        await choreHistoryCollection.InsertOneAsync(new ChoreHistoryModel(chore));
+    }
+```
+
+This code is adequate but seeing as we are using two collections we should do some exception checking. A better way would be to add the following code using transactions so that we can roll back if something goes wrong.
+
+```csharp
+    public async Task CompleteChore(ChoreModel chore)
+    {
+        var client = new MongoClient(ConnectionString);
+        using var session = await client.StartSessionAsync();
+
+        session.StartTransaction();
+
+        try
+        {
+            var db = client.GetDatabase(DatabaseName);
+            var choresCollection = db.GetCollection<ChoreModel>(ChoreCollection);
+            var filter = Builders<ChoreModel>.Filter.Eq("Id", chore.Id);
+            await choresCollection.ReplaceOneAsync(filter, chore);
+
+            var choreHistoryCollection = db.GetCollection<ChoreHistoryModel>(ChoreHistoryCollection);
+            await choreHistoryCollection.InsertOneAsync(new ChoreHistoryModel(chore));
+
+            await session.CommitTransactionAsync();
+        }
+        catch (Exception ex)
+        {
+            await session.AbortTransactionAsync();
+            Console.WriteLine(ex.Message);
+        }
+    }
+```
+
+Having said that we can't actually run a transaction on a local machine because there is only one cluster.
+
+To get around that we can use MongoDB Atlas in the cloud where we are using three clusters and now the transaction will work.
+
+**Note:** in the transaction version we aren't using the ``ConnectToMongo<>()`` method. This is because we are using a ``using`` statement to create a session.
+
+We can test the CompleteChore method with this code.
+
+```csharp
+    //// Update a chore
+    var chores = await db.GetAllChores();
+
+    var newChore = chores.First();
+    newChore.LastCompleted = DateTime.UtcNow;
+
+    await db.CompleteChore(newChore);
+```
+
+Result:
+
+> _id: 62b54465235cdea1dd14db49
+> ChoreId: "62b53574de42f5dbe02d1abf"
+> ChoreText: "Mow the Lawn"
+> DateCompleted: 2022-06-24T04:58:13.887+00:00
+> 
+> WhoCompleted
+> Object
+> _id: 62b533031e49b6de65344b2a
+> FirstName: "Alan"
+> LastName: "Robson"
+
+### Getting a user and their chores
+
+```csharp
+    // View a user and their chores
+    var users = await db.GetAllUsers();
+    
+    foreach (var user in users.ToList())
+    {
+        Console.WriteLine($"{user.Id}: {user.FirstName} {user.LastName}");
+    
+        var chores = await db.GetAllChoresForAUser(user);
+    
+        foreach (var chore in chores)
+        {
+            Console.Write($"{chore.Id}: {chore.ChoreText}");
+    
+            if (chore.FrequencyInDays > 0)
+            {
+                Console.Write($"  - Frequency {chore.FrequencyInDays} days.");
+            }
+    
+            if (chore.LastCompleted != null)
+            {
+                Console.Write($" Last completed: {chore.LastCompleted}\n");
+            }
+        }
+    }
+```
+
+### Conclusion
+
+This video course has just scratched the surface of using MongoDB with C#. We are using ``users.First()`` to grab the first user in our collection and then attaching a chore to that user. We need to harden these routines so that we can select a particular user.
+
+We also need to use LINQ to query more than one collection at a time and return one to many results.
+
+This tutorial is a continuation of the *Intro to MongoDB with C#* (Sandbox\Mongo\MongoDbDemo) tutorial I did. Both tutorials created a data access layer but in the examples above we are using async functions to retrieve our data which is more efficient.

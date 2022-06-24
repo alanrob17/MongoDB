@@ -366,7 +366,8 @@ code {
     });
   </script>
 <h1 id="using-mongodb-with-c">Using MongoDB with C #</h1>
-<p>We will create an ASP.Net Core 6.0 console application. named <strong>MongoDbDemoApp</strong>.</p>
+<p>Video tutorial: IAmTimCorey - How to Connect MongoDB to C# the Easy Way (Sandbox\Mongo\MongoDbDemoApp).</p>
+<p>We will create an ASP.Net Core 6.0 console application named <strong>MongoDbDemoApp</strong>.</p>
 <p><strong>Note:</strong> in this solution we are using the file scope not block scope. This isn't the way I usually work.</p>
 <p>The first thing we need to do is to add the MongoDB.Driver NuGet package to our solution.</p>
 <p>Add the <strong>using</strong> statement for the driver.</p>
@@ -673,7 +674,123 @@ code {
 <h2 id="using-our-data-access-layer">Using our data access layer</h2>
 <p>We will go back to our <strong>MongoDBDemo</strong> project and comment out our database connection code and the <code>person</code> code in the Program.cs file.</p>
 <p>We also need to change our dependencies by adding our <strong>MongoDataAccess</strong> library. We do this by adding a project reference to the library.</p>
-<p>Time 41.44</p>
+<p>We have to add the following <strong>using</strong> statements.</p>
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDataAccess.DataAccess;
+    <span class="hljs-keyword">using</span> MongoDataAccess.Models;
+</div></code></pre>
+<h3 id="inserting-a-user">Inserting a User</h3>
+<pre class="hljs"><code><div>    <span class="hljs-keyword">var</span> db = <span class="hljs-keyword">new</span> ChoreDataAccess();
+
+    <span class="hljs-keyword">await</span> db.CreateUser(<span class="hljs-keyword">new</span> UserModel() { FirstName = <span class="hljs-string">"Alan"</span>, LastName = <span class="hljs-string">"Robson"</span> });
+</div></code></pre>
+<p>Here we open our database connection and then use it to create a new user.</p>
+<p><strong>Note:</strong> all of our database methods are <strong>async</strong> methods so we need to use the <code>await</code> keyword in front of our database interactions.</p>
+<h3 id="inserting-a-chore">Inserting a Chore</h3>
+<p>With our database connection still open we can add a chore to the current user. First, we must get our users collection and in our case we are going to select the first user to attach a chore to.</p>
+<pre class="hljs"><code><div>    <span class="hljs-keyword">var</span> users = <span class="hljs-keyword">await</span> db.GetAllUsers();
+
+    <span class="hljs-keyword">var</span> chore = <span class="hljs-keyword">new</span> ChoreModel()
+    {
+        AssignedTo = users.First(),
+        ChoreText = <span class="hljs-string">"Mow the Lawn"</span>,
+        FrequencyInDays = <span class="hljs-number">7</span>
+    };
+
+    <span class="hljs-keyword">await</span> db.CreateChore(chore);
+</div></code></pre>
+<h3 id="completing-chore-history">Completing Chore history</h3>
+<p>We also need to update the chore if that chore has been completed. We can do this with.</p>
+<pre class="hljs"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">CompleteChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> choresCollection = ConnectToMongo&lt;ChoreModel&gt;(ChoreCollection);
+        <span class="hljs-keyword">var</span> filter = Builders&lt;ChoreModel&gt;.Filter.Eq(<span class="hljs-string">"Id"</span>, chore.Id);
+        <span class="hljs-keyword">await</span> choresCollection.ReplaceOneAsync(filter, chore);
+
+        <span class="hljs-keyword">var</span> choreHistoryCollection = ConnectToMongo&lt;ChoreHistoryModel&gt;(ChoreHistoryCollection);
+        <span class="hljs-keyword">await</span> choreHistoryCollection.InsertOneAsync(<span class="hljs-keyword">new</span> ChoreHistoryModel(chore));
+    }
+</div></code></pre>
+<p>This code is adequate but seeing as we are using two collections we should do some exception checking. A better way would be to add the following code using transactions so that we can roll back if something goes wrong.</p>
+<pre class="hljs"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">CompleteChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
+    {
+        <span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> MongoClient(ConnectionString);
+        <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> session = <span class="hljs-keyword">await</span> client.StartSessionAsync();
+
+        session.StartTransaction();
+
+        <span class="hljs-keyword">try</span>
+        {
+            <span class="hljs-keyword">var</span> db = client.GetDatabase(DatabaseName);
+            <span class="hljs-keyword">var</span> choresCollection = db.GetCollection&lt;ChoreModel&gt;(ChoreCollection);
+            <span class="hljs-keyword">var</span> filter = Builders&lt;ChoreModel&gt;.Filter.Eq(<span class="hljs-string">"Id"</span>, chore.Id);
+            <span class="hljs-keyword">await</span> choresCollection.ReplaceOneAsync(filter, chore);
+
+            <span class="hljs-keyword">var</span> choreHistoryCollection = db.GetCollection&lt;ChoreHistoryModel&gt;(ChoreHistoryCollection);
+            <span class="hljs-keyword">await</span> choreHistoryCollection.InsertOneAsync(<span class="hljs-keyword">new</span> ChoreHistoryModel(chore));
+
+            <span class="hljs-keyword">await</span> session.CommitTransactionAsync();
+        }
+        <span class="hljs-keyword">catch</span> (Exception ex)
+        {
+            <span class="hljs-keyword">await</span> session.AbortTransactionAsync();
+            Console.WriteLine(ex.Message);
+        }
+    }
+</div></code></pre>
+<p>Having said that we can't actually run a transaction on a local machine because there is only one cluster.</p>
+<p>To get around that we can use MongoDB Atlas in the cloud where we are using three clusters and now the transaction will work.</p>
+<p><strong>Note:</strong> in the transaction version we aren't using the <code>ConnectToMongo&lt;&gt;()</code> method. This is because we are using a <code>using</code> statement to create a session.</p>
+<p>We can test the CompleteChore method with this code.</p>
+<pre class="hljs"><code><div>    <span class="hljs-comment"><span class="hljs-doctag">///</span>/ Update a chore</span>
+    <span class="hljs-keyword">var</span> chores = <span class="hljs-keyword">await</span> db.GetAllChores();
+
+    <span class="hljs-keyword">var</span> newChore = chores.First();
+    newChore.LastCompleted = DateTime.UtcNow;
+
+    <span class="hljs-keyword">await</span> db.CompleteChore(newChore);
+</div></code></pre>
+<p>Result:</p>
+<blockquote>
+<p>_id: 62b54465235cdea1dd14db49<br>
+ChoreId: &quot;62b53574de42f5dbe02d1abf&quot;<br>
+ChoreText: &quot;Mow the Lawn&quot;<br>
+DateCompleted: 2022-06-24T04:58:13.887+00:00</p>
+<p>WhoCompleted<br>
+Object<br>
+_id: 62b533031e49b6de65344b2a<br>
+FirstName: &quot;Alan&quot;<br>
+LastName: &quot;Robson&quot;</p>
+</blockquote>
+<h3 id="getting-a-user-and-their-chores">Getting a user and their chores</h3>
+<pre class="hljs"><code><div>    <span class="hljs-comment">// View a user and their chores</span>
+    <span class="hljs-keyword">var</span> users = <span class="hljs-keyword">await</span> db.GetAllUsers();
+    
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> user <span class="hljs-keyword">in</span> users.ToList())
+    {
+        Console.WriteLine(<span class="hljs-string">$"<span class="hljs-subst">{user.Id}</span>: <span class="hljs-subst">{user.FirstName}</span> <span class="hljs-subst">{user.LastName}</span>"</span>);
+    
+        <span class="hljs-keyword">var</span> chores = <span class="hljs-keyword">await</span> db.GetAllChoresForAUser(user);
+    
+        <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> chore <span class="hljs-keyword">in</span> chores)
+        {
+            Console.Write(<span class="hljs-string">$"<span class="hljs-subst">{chore.Id}</span>: <span class="hljs-subst">{chore.ChoreText}</span>"</span>);
+    
+            <span class="hljs-keyword">if</span> (chore.FrequencyInDays &gt; <span class="hljs-number">0</span>)
+            {
+                Console.Write(<span class="hljs-string">$"  - Frequency <span class="hljs-subst">{chore.FrequencyInDays}</span> days."</span>);
+            }
+    
+            <span class="hljs-keyword">if</span> (chore.LastCompleted != <span class="hljs-literal">null</span>)
+            {
+                Console.Write(<span class="hljs-string">$" Last completed: <span class="hljs-subst">{chore.LastCompleted}</span>\n"</span>);
+            }
+        }
+    }
+</div></code></pre>
+<h3 id="conclusion">Conclusion</h3>
+<p>This video course has just scratched the surface of using MongoDB with C#. We are using <code>users.First()</code> to grab the first user in our collection and then attaching a chore to that user. We need to harden these routines so that we can select a particular user.</p>
+<p>We also need to use LINQ to query more than one collection at a time and return one to many results.</p>
+<p>This tutorial is a continuation of the <em>Intro to MongoDB with C#</em> (Sandbox\Mongo\MongoDbDemo) tutorial I did. Both tutorials created a data access layer but in the examples above we are using async functions to retrieve our data which is more efficient.</p>
 
 </body>
 </html>
