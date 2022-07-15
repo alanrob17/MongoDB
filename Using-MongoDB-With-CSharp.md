@@ -1,4 +1,4 @@
-# Using MongoDB with C \#
+# Using MongoDB with C\#
 
 Video tutorial: IAmTimCorey - How to Connect MongoDB to C# the Easy Way (Sandbox\Mongo\MongoDbDemoApp).
 
