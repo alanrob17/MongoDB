@@ -1,379 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>02-Basics-and-CRUD.md</title>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-
-<style>
-/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
-body {
-	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
-	font-size: var(--vscode-markdown-font-size, 14px);
-	padding: 0 26px;
-	line-height: var(--vscode-markdown-line-height, 22px);
-	word-wrap: break-word;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Understanding the basics &amp; CRUD</title>
+<link href="assets/css/bootstrap.css" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="assets/css/starter-template.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?lang=css&amp;skin=sunburst"></script>
+<style type="text/css">
+html {
+	font-size: 90.0%;
 }
 
-#code-csp-warning {
-	position: fixed;
-	top: 0;
-	right: 0;
-	color: white;
-	margin: 16px;
-	text-align: center;
-	font-size: 12px;
-	font-family: sans-serif;
-	background-color:#444444;
-	cursor: pointer;
-	padding: 6px;
-	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+h2 {
+	margin-top: 60px;
 }
 
-#code-csp-warning:hover {
-	text-decoration: none;
-	background-color:#007acc;
-	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+h4, h3 {
+	padding-top: 40px!;		
 }
 
-body.scrollBeyondLastLine {
-	margin-bottom: calc(100vh - 22px);
+p {
+	font-size: 1.2em;
+}
+h4 {
+	font-size: 1.4em;
 }
 
-body.showEditorSelection .code-line {
-	position: relative;
+img, pre.prettyprint {
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
 }
+h1, h2, h3, h4, h5, h6 {
+    color:#007bff;
 
-body.showEditorSelection .code-active-line:before,
-body.showEditorSelection .code-line:hover:before {
-	content: "";
-	display: block;
-	position: absolute;
-	top: 0;
-	left: -12px;
-	height: 100%;
 }
-
-body.showEditorSelection li.code-active-line:before,
-body.showEditorSelection li.code-line:hover:before {
-	left: -30px;
-}
-
-.vscode-light.showEditorSelection .code-active-line:before {
-	border-left: 3px solid rgba(0, 0, 0, 0.15);
-}
-
-.vscode-light.showEditorSelection .code-line:hover:before {
-	border-left: 3px solid rgba(0, 0, 0, 0.40);
-}
-
-.vscode-light.showEditorSelection .code-line .code-line:hover:before {
-	border-left: none;
-}
-
-.vscode-dark.showEditorSelection .code-active-line:before {
-	border-left: 3px solid rgba(255, 255, 255, 0.4);
-}
-
-.vscode-dark.showEditorSelection .code-line:hover:before {
-	border-left: 3px solid rgba(255, 255, 255, 0.60);
-}
-
-.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
-	border-left: none;
-}
-
-.vscode-high-contrast.showEditorSelection .code-active-line:before {
-	border-left: 3px solid rgba(255, 160, 0, 0.7);
-}
-
-.vscode-high-contrast.showEditorSelection .code-line:hover:before {
-	border-left: 3px solid rgba(255, 160, 0, 1);
-}
-
-.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
-	border-left: none;
-}
-
-img {
-	max-width: 100%;
-	max-height: 100%;
-}
-
-a {
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
-a:focus,
-input:focus,
-select:focus,
-textarea:focus {
-	outline: 1px solid -webkit-focus-ring-color;
-	outline-offset: -1px;
-}
-
-hr {
-	border: 0;
-	height: 2px;
-	border-bottom: 2px solid;
-}
-
-h1 {
-	padding-bottom: 0.3em;
-	line-height: 1.2;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-}
-
-h1, h2, h3 {
-	font-weight: normal;
-}
-
-table {
-	border-collapse: collapse;
-}
-
-table > thead > tr > th {
-	text-align: left;
-	border-bottom: 1px solid;
-}
-
-table > thead > tr > th,
-table > thead > tr > td,
-table > tbody > tr > th,
-table > tbody > tr > td {
-	padding: 5px 10px;
-}
-
-table > tbody > tr + tr > td {
-	border-top: 1px solid;
-}
-
 blockquote {
-	margin: 0 7px 0 5px;
-	padding: 0 16px 0 10px;
-	border-left-width: 5px;
-	border-left-style: solid;
-}
-
-code {
-	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
-	font-size: 1em;
-	line-height: 1.357em;
-}
-
-body.wordWrap pre {
-	white-space: pre-wrap;
-}
-
-pre:not(.hljs),
-pre.hljs code > div {
-	padding: 16px;
-	border-radius: 3px;
-	overflow: auto;
-}
-
-pre code {
-	color: var(--vscode-editor-foreground);
-	tab-size: 4;
-}
-
-/** Theming */
-
-.vscode-light pre {
-	background-color: rgba(220, 220, 220, 0.4);
-}
-
-.vscode-dark pre {
-	background-color: rgba(10, 10, 10, 0.4);
-}
-
-.vscode-high-contrast pre {
-	background-color: rgb(0, 0, 0);
-}
-
-.vscode-high-contrast h1 {
-	border-color: rgb(0, 0, 0);
-}
-
-.vscode-light table > thead > tr > th {
-	border-color: rgba(0, 0, 0, 0.69);
-}
-
-.vscode-dark table > thead > tr > th {
-	border-color: rgba(255, 255, 255, 0.69);
-}
-
-.vscode-light h1,
-.vscode-light hr,
-.vscode-light table > tbody > tr + tr > td {
-	border-color: rgba(0, 0, 0, 0.18);
-}
-
-.vscode-dark h1,
-.vscode-dark hr,
-.vscode-dark table > tbody > tr + tr > td {
-	border-color: rgba(255, 255, 255, 0.18);
-}
-
-</style>
-
-<style>
-/* Tomorrow Theme */
-/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
-/* Original theme - https://github.com/chriskempson/tomorrow-theme */
-
-/* Tomorrow Comment */
-.hljs-comment,
-.hljs-quote {
-	color: #8e908c;
-}
-
-/* Tomorrow Red */
-.hljs-variable,
-.hljs-template-variable,
-.hljs-tag,
-.hljs-name,
-.hljs-selector-id,
-.hljs-selector-class,
-.hljs-regexp,
-.hljs-deletion {
-	color: #c82829;
-}
-
-/* Tomorrow Orange */
-.hljs-number,
-.hljs-built_in,
-.hljs-builtin-name,
-.hljs-literal,
-.hljs-type,
-.hljs-params,
-.hljs-meta,
-.hljs-link {
-	color: #f5871f;
-}
-
-/* Tomorrow Yellow */
-.hljs-attribute {
-	color: #eab700;
-}
-
-/* Tomorrow Green */
-.hljs-string,
-.hljs-symbol,
-.hljs-bullet,
-.hljs-addition {
-	color: #718c00;
-}
-
-/* Tomorrow Blue */
-.hljs-title,
-.hljs-section {
-	color: #4271ae;
-}
-
-/* Tomorrow Purple */
-.hljs-keyword,
-.hljs-selector-tag {
-	color: #8959a8;
-}
-
-.hljs {
-	display: block;
-	overflow-x: auto;
-	color: #4d4d4c;
-	padding: 0.5em;
-}
-
-.hljs-emphasis {
-	font-style: italic;
-}
-
-.hljs-strong {
-	font-weight: bold;
+    border-left: 4px solid #999;
+    padding-left: 1rem;
+    page-break-inside: avoid;
 }
 </style>
-
-<style>
-/*
- * Markdown PDF CSS
- */
-
- body {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
-	padding: 0 12px;
-}
-
-pre {
-	background-color: #f8f8f8;
-	border: 1px solid #cccccc;
-	border-radius: 3px;
-	overflow-x: auto;
-	white-space: pre-wrap;
-	overflow-wrap: break-word;
-}
-
-pre:not(.hljs) {
-	padding: 23px;
-	line-height: 19px;
-}
-
-blockquote {
-	background: rgba(127, 127, 127, 0.1);
-	border-color: rgba(0, 122, 204, 0.5);
-}
-
-.emoji {
-	height: 1.4em;
-}
-
-code {
-	font-size: 14px;
-	line-height: 19px;
-}
-
-/* for inline code */
-:not(pre):not(.hljs) > code {
-	color: #C9AE75; /* Change the old color so it seems less like an error */
-	font-size: inherit;
-}
-
-/* Page Break : use <div class="page"/> to insert page break
--------------------------------------------------------- */
-.page {
-	page-break-after: always;
-}
-
-</style>
-
-<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 </head>
 <body>
-  <script>
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
-          ? 'dark'
-          : 'default'
-    });
-  </script>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">MongoDB - The Complete Developer's Guide 2024</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">02 - Understanding the basics &amp; CRUD <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <div class="starter-template">
+
+
 <h1 id="understanding-the-basics--crud">Understanding the basics &amp; CRUD</h1>
 <p>Databases, Collections and documents are automatically created when you start working with them.</p>
 <p><img src="assets/images/databases.jpg" alt="Databases, collections and documents" title="Databases, collections and documents"></p>
 <p><strong>Note:</strong> <code>collections</code> are the equivalent of SQL tables and <code>documents</code> are the equivalent of a single record in a table.</p>
 <h2 id="create-databases-and-collections">Create Databases and Collections</h2>
-<pre class="hljs"><code><div>    use flights
+<pre class="prettyprint"><code><div>    use flights
 </div></code></pre>
 <h3 id="add-collections">Add collections</h3>
-<pre class="hljs"><code><div>    db.flightData.insertOne({})
+<pre class="prettyprint"><code><div>    db.flightData.insertOne({})
 </div></code></pre>
 <p>Where:</p>
 <p><strong>db</strong> is a database command.</p>
@@ -382,7 +91,7 @@ code {
 <p><strong>{}</strong> is the document that is in JSON format.</p>
 <h2 id="understanding-json-data">Understanding JSON data</h2>
 <p>An example of JSON data.</p>
-<pre class="hljs"><code><div>    [
+<pre class="prettyprint"><code><div>    [
       {
         <span class="hljs-attr">"departureAirport"</span>: <span class="hljs-string">"MUC"</span>,
         <span class="hljs-attr">"arrivalAirport"</span>: <span class="hljs-string">"SFO"</span>,
@@ -402,7 +111,7 @@ code {
 <p>This is an array of two JSON documents.</p>
 <p>We will add each document into <code>flightData</code>.</p>
 <p>Copy:</p>
-<pre class="hljs"><code><div>    {
+<pre class="prettyprint"><code><div>    {
         <span class="hljs-attr">"departureAirport"</span>: <span class="hljs-string">"MUC"</span>,
         <span class="hljs-attr">"arrivalAirport"</span>: <span class="hljs-string">"SFO"</span>,
         <span class="hljs-attr">"aircraft"</span>: <span class="hljs-string">"Airbus A380"</span>,
@@ -411,7 +120,7 @@ code {
     }
 </div></code></pre>
 <p>Add into:</p>
-<pre class="hljs"><code><div>    db.flightData.insertOne()
+<pre class="prettyprint"><code><div>    db.flightData.insertOne()
 </div></code></pre>
 <p>You will get a similar success output.</p>
 <blockquote>
@@ -426,10 +135,10 @@ insertedId: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)<br>
 </blockquote>
 <p><strong>Note:</strong> that you can add the double quotes around the <strong>key</strong> part of each field if you want. If you have spaces in your key (don't do it) you would have to use double quotes.</p>
 <p>Once you have added both records into the collection you can list each document with.</p>
-<pre class="hljs"><code><div>    db.flightData.find()
+<pre class="prettyprint"><code><div>    db.flightData.find()
 </div></code></pre>
 <p>this will list.</p>
-<pre class="hljs"><code><div>    [     
+<pre class="prettyprint"><code><div>    [     
       {       
         _id: ObjectId(<span class="hljs-string">"65c03caf02eb29694d65fd8d"</span>),        
         departureAirport: 'MUC',      
@@ -454,10 +163,10 @@ insertedId: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)<br>
 <p>MongoDB takes the JSON data and stores it in <strong>Binary JSON</strong> (BSON). This compacts the JSON making it faster to work with.</p>
 <p><strong>Note:</strong> the <code>_id: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)</code> id object isn't valid JSON data but MongoDB is able to work with these id's.</p>
 <p>Now add this document.</p>
-<pre class="hljs"><code><div>    db.flightData.insertOne({departureAirport: <span class="hljs-string">"MEL"</span>, arrivalAirport: <span class="hljs-string">"EDI"</span>})
+<pre class="prettyprint"><code><div>    db.flightData.insertOne({departureAirport: <span class="hljs-string">"MEL"</span>, arrivalAirport: <span class="hljs-string">"EDI"</span>})
 </div></code></pre>
 <p>Output.</p>
-<pre class="hljs"><code><div>    [     
+<pre class="prettyprint"><code><div>    [     
       {       
         _id: ObjectId(<span class="hljs-string">"65c03caf02eb29694d65fd8d"</span>),        
         departureAirport: 'MUC',      
@@ -484,10 +193,10 @@ insertedId: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)<br>
 <p>Your documents don't have to have the same schema but you also have to be able to interrogate the data so you have to be aware of the different schemas.</p>
 <p>Also note that MongoDB adds id objects for you but you don't have to use them. You just have to be aware that each id has to be unique.</p>
 <p>You can add this.</p>
-<pre class="hljs"><code><div>    db.flightData.insertOne({departureAirport: <span class="hljs-string">"MEL"</span>, arrivalAirport: <span class="hljs-string">"EDI"</span>, _id: <span class="hljs-string">"melbourne-edinburgh-1"</span>})
+<pre class="prettyprint"><code><div>    db.flightData.insertOne({departureAirport: <span class="hljs-string">"MEL"</span>, arrivalAirport: <span class="hljs-string">"EDI"</span>, _id: <span class="hljs-string">"melbourne-edinburgh-1"</span>})
 </div></code></pre>
 <p>Output.</p>
-<pre class="hljs"><code><div>    {     
+<pre class="prettyprint"><code><div>    {     
         _id: 'melbourne-edinburgh<span class="hljs-number">-1</span>',     
         departureAirport: 'MEL',      
         arrivalAirport: 'EDI'     
@@ -499,7 +208,7 @@ insertedId: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)<br>
 <p><img src="assets/images/flight-data.jpg" alt="Flight data" title="Flight data"></p>
 <h2 id="finding-inserting-updating-and-deleting-elements">Finding, inserting, updating and deleting elements</h2>
 <h3 id="delete-data">delete data</h3>
-<pre class="hljs"><code><div>    db.flightData.deleteOne({ departureAirport: <span class="hljs-string">"MUC"</span> })
+<pre class="prettyprint"><code><div>    db.flightData.deleteOne({ departureAirport: <span class="hljs-string">"MUC"</span> })
 </div></code></pre>
 <p>Returns:</p>
 <blockquote>
@@ -508,26 +217,26 @@ insertedId: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)<br>
 <p><strong>Note:</strong> is there were two documents with departureAirport equals &quot;MUC&quot; then <code>deleteOne()</code> would delete the first document MongoDB finds.</p>
 <h3 id="update-data">Update data</h3>
 <p>We want to add another field into a document.</p>
-<pre class="hljs"><code><div>    db.flightData.updateOne({distance: 950}, {<span class="hljs-variable">$set</span>: {marker: <span class="hljs-string">'delete'</span>}})
+<pre class="prettyprint"><code><div>    db.flightData.updateOne({distance: 950}, {<span class="hljs-variable">$set</span>: {marker: <span class="hljs-string">'delete'</span>}})
 </div></code></pre>
 <p><strong>$set</strong> is an atomic operator and the <code>updateOne()</code> method must contain one. Whenever you see something in MongoDB with a <strong>$</strong> it is a reserved operator.</p>
 <p>You use <strong>$set</strong>  to describe the changes you want to make with an update method to add another field. If the <code>marker</code> field already exists in the document it will update the <code>marker</code> field to the value of <code>delete</code>.</p>
 <p><strong>Note:</strong> in the example above we use single quotes. Either single or double quotes will work and in the latest version of the <strong>mongosh</strong> shell all documents will be shown with single quotes for string data.</p>
 <p>What if I want to add the <code>marker</code> field to every document?</p>
-<pre class="hljs"><code><div>    db.flightData.updateMany({}, {<span class="hljs-variable">$set</span>: {marker: <span class="hljs-string">'toDelete'</span>}})
+<pre class="prettyprint"><code><div>    db.flightData.updateMany({}, {<span class="hljs-variable">$set</span>: {marker: <span class="hljs-string">'toDelete'</span>}})
 </div></code></pre>
 <p>The empty brackets says change all documents. Now all documents have a field named <code>marker</code> with a value of <code>toDelete</code>.</p>
 <p>We can now use this field to delete all documents.</p>
 <p>We have a couple of methods to do this. The first will delete all documents unconditionally.</p>
-<pre class="hljs"><code><div>    db.flightData.deleteMany({})
+<pre class="prettyprint"><code><div>    db.flightData.deleteMany({})
 </div></code></pre>
 <p>Or if we want to filter certain documents we can do this.</p>
-<pre class="hljs"><code><div>    db.flightData.deleteMany({}, {marker: <span class="hljs-string">'toDelete'</span>})
+<pre class="prettyprint"><code><div>    db.flightData.deleteMany({}, {marker: <span class="hljs-string">'toDelete'</span>})
 </div></code></pre>
 <p>Which in our case will do the same thing as the previous method.</p>
 <h3 id="understanding-insertmany">Understanding insertMany()</h3>
 <p>We have an empty collection at the moment so open up the <code>flight.json</code> file and copy the whole file. Now we are going to add a whole array of data.</p>
-<pre class="hljs"><code><div>    db.flightData.insertMany([
+<pre class="prettyprint"><code><div>    db.flightData.insertMany([
     ...   {
     .....     <span class="hljs-attr">"departureAirport"</span>: <span class="hljs-string">"MUC"</span>,
     .....     <span class="hljs-attr">"arrivalAirport"</span>: <span class="hljs-string">"SFO"</span>,
@@ -546,7 +255,7 @@ insertedId: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)<br>
     ... )
 </div></code></pre>
 <p>Output:</p>
-<pre class="hljs"><code><div>    {     
+<pre class="prettyprint"><code><div>    {     
       acknowledged: <span class="hljs-literal">true</span>,     
       insertedIds: {      
         '0': ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>),        
@@ -557,13 +266,13 @@ insertedId: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)<br>
 <p><strong>Note</strong> when you add an array the id's are very similar with only the last digit being different.</p>
 <h3 id="deeper-dive-into-finding-data">Deeper dive into finding data</h3>
 <p>You can filter your <code>find()</code> method.</p>
-<pre class="hljs"><code><div>    db.flightData.find({departureAirport: <span class="hljs-string">'LHR'</span>})
+<pre class="prettyprint"><code><div>    db.flightData.find({departureAirport: <span class="hljs-string">'LHR'</span>})
 </div></code></pre>
 <p>You can do more complex searches. We can pass another object and use one of the special operators.</p>
-<pre class="hljs"><code><div>    db.flightData.find({distance: {<span class="hljs-variable">$gt</span>: 1000}})
+<pre class="prettyprint"><code><div>    db.flightData.find({distance: {<span class="hljs-variable">$gt</span>: 1000}})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>    [     
+<pre class="prettyprint"><code><div>    [     
       {       
         _id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>),        
         departureAirport: 'MUC',      
@@ -576,15 +285,15 @@ insertedId: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)<br>
 </div></code></pre>
 <p>This doesn't pick up the document with a distance of 950.</p>
 <p>We can also filter by <code>findOne()</code> to find the first document with the criteria.</p>
-<pre class="hljs"><code><div>    db.flightData.findOne({distance: {<span class="hljs-variable">$gt</span>: 800}})
+<pre class="prettyprint"><code><div>    db.flightData.findOne({distance: {<span class="hljs-variable">$gt</span>: 800}})
 </div></code></pre>
 <p>It will bring back the document with the distance of 12000 because it is the first document that is greater that 800.</p>
 <h2 id="update-vs-updatemany">update vs updateMany()</h2>
 <p>We can update a document using a filter.</p>
-<pre class="hljs"><code><div>    db.flightData.updateOne({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {<span class="hljs-variable">$set</span>: {delayed: <span class="hljs-literal">true</span>}})
+<pre class="prettyprint"><code><div>    db.flightData.updateOne({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {<span class="hljs-variable">$set</span>: {delayed: <span class="hljs-literal">true</span>}})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>    {     
+<pre class="prettyprint"><code><div>    {     
         _id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>),        
         departureAirport: 'MUC',      
         arrivalAirport: 'SFO',        
@@ -595,7 +304,7 @@ insertedId: ObjectId(&quot;65c03d5702eb29694d65fd8e&quot;)<br>
     }
 </div></code></pre>
 <p>You could also use.</p>
-<pre class="hljs"><code><div>    db.flightData.update({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {<span class="hljs-variable">$set</span>: {delayed: <span class="hljs-literal">true</span>}})
+<pre class="prettyprint"><code><div>    db.flightData.update({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {<span class="hljs-variable">$set</span>: {delayed: <span class="hljs-literal">true</span>}})
 </div></code></pre>
 <p>Returns:</p>
 <blockquote>
@@ -610,10 +319,10 @@ upsertedCount: 0<br>
 </blockquote>
 <p>This will report back that no document was modified because we had already modified this document.</p>
 <p>If we change <code>delayed</code> to false.</p>
-<pre class="hljs"><code><div>    db.flightData.update({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {<span class="hljs-variable">$set</span>: {delayed: <span class="hljs-literal">true</span>}})
+<pre class="prettyprint"><code><div>    db.flightData.update({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {<span class="hljs-variable">$set</span>: {delayed: <span class="hljs-literal">true</span>}})
 </div></code></pre>
 <p>This will update the document</p>
-<pre class="hljs"><code><div>    {     
+<pre class="prettyprint"><code><div>    {     
       acknowledged: <span class="hljs-literal">true</span>,     
       insertedId: <span class="hljs-literal">null</span>,       
       matchedCount: <span class="hljs-number">1</span>,        
@@ -622,12 +331,12 @@ upsertedCount: 0<br>
     }
 </div></code></pre>
 <p>You have to be careful with the <code>update()</code> method. In earlier versions of MongoDB you could have done.</p>
-<pre class="hljs"><code><div>    db.flightData.update({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {delayed: <span class="hljs-literal">true</span>})
+<pre class="prettyprint"><code><div>    db.flightData.update({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {delayed: <span class="hljs-literal">true</span>})
 </div></code></pre>
 <p>This would have replaced the document with the ObjectId with <code>{delayed: true}</code> as the only field in the document (besides the _id).</p>
 <p>We should avoid using it and use the newer <code>updateOne()</code> and <code>updateMany()</code> methods instead.</p>
 <p>If you want to replace a document you can use this.</p>
-<pre class="hljs"><code><div>    db.flightData.replaceOne({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {
+<pre class="prettyprint"><code><div>    db.flightData.replaceOne({_id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>)}, {
     ...     <span class="hljs-string">"departureAirport"</span>: <span class="hljs-string">"MUC"</span>,
     ...     <span class="hljs-string">"arrivalAirport"</span>: <span class="hljs-string">"SFO"</span>,
     ...     <span class="hljs-string">"aircraft"</span>: <span class="hljs-string">"Airbus A380"</span>,
@@ -654,24 +363,24 @@ upsertedCount: 0<br>
 <p>The <strong>cursorObject</strong> will use <code>it</code> to allow you to cycle through the results.</p>
 <p><code>find()</code> just gives us back a cursor.</p>
 <p>The following will send back all documents in a collection.</p>
-<pre class="hljs"><code><div>    db.passengers.find().toArray()
+<pre class="prettyprint"><code><div>    db.passengers.find().toArray()
 </div></code></pre>
 <p>You can count the number of documents in a collection with.</p>
-<pre class="hljs"><code><div>    db.passengers.countDocuments()
+<pre class="prettyprint"><code><div>    db.passengers.countDocuments()
 </div></code></pre>
 <p>The <code>mongosh</code> shell is based on JavaScript so you could run this JavaScript function.</p>
-<pre class="hljs"><code><div>    db.passengers.find().forEach((passenger) =&gt; {printjson(passenger)})
+<pre class="prettyprint"><code><div>    db.passengers.find().forEach((passenger) =&gt; {printjson(passenger)})
 </div></code></pre>
 <p>This would do the same as <code>.toArray()</code>.</p>
 <p>It is important to remember that the <code>find()</code> method is a cursor.</p>
 <h2 id="understanding-projection">Understanding projection</h2>
 <p>So far we have been using <code>find()</code> to send back all fields in each document. What if we want to send back a sunset of the fields. This is called a <strong>projection</strong>.</p>
 <p>In <code>passengers</code> we have three fields, _id, name, age. To use projection and send back the name of the passenger.</p>
-<pre class="hljs"><code><div>    db.passengers.find({}, {name: 1})
+<pre class="prettyprint"><code><div>    db.passengers.find({}, {name: 1})
 </div></code></pre>
 <p><strong>1</strong> means send back the name field.</p>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  [     
+<pre class="prettyprint"><code><div>  [     
     ...            
     { _id: ObjectId(<span class="hljs-string">"65c0896302eb29694d65fda7"</span>), name: 'Gordon Black' },        
     { _id: ObjectId(<span class="hljs-string">"65c089dc02eb29694d65fda8"</span>), name: 'Alan Robson' },     
@@ -682,10 +391,10 @@ upsertedCount: 0<br>
 <p>This isn't the output we were expecting!</p>
 <p>The <code>_id</code> is a special field so it is always included.</p>
 <p>You have to explicitly exclude it from the fields. You can do this with <strong>0</strong> and that means exclude that field.</p>
-<pre class="hljs"><code><div>    db.passengers.find({}, {name: 1, _id: 0}).toArray()
+<pre class="prettyprint"><code><div>    db.passengers.find({}, {name: 1, _id: 0}).toArray()
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>     ...        
+<pre class="prettyprint"><code><div>     ...        
     { name: 'Gordon Black' },       
     { name: 'Alan Robson' },        
     { name: 'Charley Robson' },     
@@ -701,10 +410,10 @@ upsertedCount: 0<br>
 <li>A document can have a maximum size of 16 Mb.</li>
 </ul>
 <p>An example of embedding a document withing a document.</p>
-<pre class="hljs"><code><div>    db.flightData.updateMany({}, {<span class="hljs-variable">$set</span>: {status: {description: <span class="hljs-string">"On-time"</span>, lastUpdated: <span class="hljs-string">"1 hour ago"</span>}}})
+<pre class="prettyprint"><code><div>    db.flightData.updateMany({}, {<span class="hljs-variable">$set</span>: {status: {description: <span class="hljs-string">"On-time"</span>, lastUpdated: <span class="hljs-string">"1 hour ago"</span>}}})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  [     
+<pre class="prettyprint"><code><div>  [     
     {       
       _id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>),        
       departureAirport: 'MUC',      
@@ -718,10 +427,10 @@ upsertedCount: 0<br>
 </div></code></pre>
 <h3 id="arrays">Arrays</h3>
 <p>Arrays can be any type of data, strings. numbers, etc. It can also be an array of documents.</p>
-<pre class="hljs"><code><div>    db.passengers.update({name: <span class="hljs-string">'Alan Robson'</span>}, {<span class="hljs-variable">$set</span>: {hobbies: [<span class="hljs-string">'music'</span>, <span class="hljs-string">'reading'</span>, <span class="hljs-string">'programming'</span>]}})
+<pre class="prettyprint"><code><div>    db.passengers.update({name: <span class="hljs-string">'Alan Robson'</span>}, {<span class="hljs-variable">$set</span>: {hobbies: [<span class="hljs-string">'music'</span>, <span class="hljs-string">'reading'</span>, <span class="hljs-string">'programming'</span>]}})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  {        
+<pre class="prettyprint"><code><div>  {        
       _id: ObjectId(<span class="hljs-string">"65c089dc02eb29694d65fda8"</span>),      
       name: 'Alan Robson',        
       age: <span class="hljs-number">71</span>,        
@@ -730,17 +439,17 @@ upsertedCount: 0<br>
 </div></code></pre>
 <h2 id="accessing-structured-data">Accessing structured data</h2>
 <p>We can access structured data by using the <code>.</code> or period symbol.</p>
-<pre class="hljs"><code><div>    db.passengers.findOne({name: <span class="hljs-string">"Alan Robson"</span>}).hobbies
+<pre class="prettyprint"><code><div>    db.passengers.findOne({name: <span class="hljs-string">"Alan Robson"</span>}).hobbies
 </div></code></pre>
 <p>Returns.</p>
 <blockquote>
 <p>[ 'music', 'reading', 'programming' ]</p>
 </blockquote>
 <p>We can search for a hobbie.</p>
-<pre class="hljs"><code><div>    db.passengers.find({hobbies: <span class="hljs-string">"programming"</span>})
+<pre class="prettyprint"><code><div>    db.passengers.find({hobbies: <span class="hljs-string">"programming"</span>})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>    [     
+<pre class="prettyprint"><code><div>    [     
       {       
         _id: ObjectId(<span class="hljs-string">"65c089dc02eb29694d65fda8"</span>),        
         name: 'Alan Robson',      
@@ -750,10 +459,10 @@ upsertedCount: 0<br>
     ]
 </div></code></pre>
 <p>We can also search within nested documents.</p>
-<pre class="hljs"><code><div>    db.flightData.find({<span class="hljs-string">"status.description"</span>: <span class="hljs-string">"On-time"</span>})
+<pre class="prettyprint"><code><div>    db.flightData.find({<span class="hljs-string">"status.description"</span>: <span class="hljs-string">"On-time"</span>})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>    [     
+<pre class="prettyprint"><code><div>    [     
       {       
         _id: ObjectId(<span class="hljs-string">"65c06e4402eb29694d65fd91"</span>),        
         departureAirport: 'MUC',      
@@ -768,7 +477,7 @@ upsertedCount: 0<br>
 <p><strong>Note:</strong> where you use a dot in your search fields you have to enclose the fields in quotes, <code>&quot;status.description&quot;</code>.</p>
 <h2 id="assignment-1">Assignment 1</h2>
 <p>Create a <code>patients</code> database.</p>
-<pre class="hljs"><code><div>    use patients
+<pre class="prettyprint"><code><div>    use patients
 </div></code></pre>
 <p>Add a patient document with the following structure</p>
 <ul>
@@ -783,10 +492,10 @@ upsertedCount: 0<br>
 <p>Delete all patients with a cold as a disease.</p>
 <h3 id="my-code">My code</h3>
 <p>Insert one patient.</p>
-<pre class="hljs"><code><div>    db.patient.insertOne({ firstName: <span class="hljs-string">"Alan"</span>, lastName: <span class="hljs-string">"Robson"</span>, age: 71, <span class="hljs-built_in">history</span>: [{ disease: <span class="hljs-string">"cold"</span>, treatment: <span class="hljs-string">"flu tablets"</span> }, { disease: <span class="hljs-string">"sore back"</span>, treatment: <span class="hljs-string">"back exercises"</span> }] })
+<pre class="prettyprint"><code><div>    db.patient.insertOne({ firstName: <span class="hljs-string">"Alan"</span>, lastName: <span class="hljs-string">"Robson"</span>, age: 71, <span class="hljs-built_in">history</span>: [{ disease: <span class="hljs-string">"cold"</span>, treatment: <span class="hljs-string">"flu tablets"</span> }, { disease: <span class="hljs-string">"sore back"</span>, treatment: <span class="hljs-string">"back exercises"</span> }] })
 </div></code></pre>
 <p>3 patients.</p>
-<pre class="hljs"><code><div>    flights&gt; db.patient.find()
+<pre class="prettyprint"><code><div>    flights&gt; db.patient.find()
     [
       {
         _id: ObjectId(<span class="hljs-string">"65c2de7edaf466d38877a4e9"</span>),
@@ -820,10 +529,10 @@ upsertedCount: 0<br>
     ]
 </div></code></pre>
 <p>Update 1 patient.</p>
-<pre class="hljs"><code><div>db.patient.updateOne({ firstName: <span class="hljs-string">"Alan"</span> }, { <span class="hljs-variable">$set</span>: { lastName: <span class="hljs-string">"Smith"</span>, age: 77, <span class="hljs-built_in">history</span>: [{ disease: <span class="hljs-string">"flu"</span>, treatment: <span class="hljs-string">"flu tablets"</span> }] } })
+<pre class="prettyprint"><code><div>db.patient.updateOne({ firstName: <span class="hljs-string">"Alan"</span> }, { <span class="hljs-variable">$set</span>: { lastName: <span class="hljs-string">"Smith"</span>, age: 77, <span class="hljs-built_in">history</span>: [{ disease: <span class="hljs-string">"flu"</span>, treatment: <span class="hljs-string">"flu tablets"</span> }] } })
 </div></code></pre>
 <p>Find with a lastName of Smith.</p>
-<pre class="hljs"><code><div>    flights&gt; db.patient.find({lastName: <span class="hljs-string">"Smith"</span>})        
+<pre class="prettyprint"><code><div>    flights&gt; db.patient.find({lastName: <span class="hljs-string">"Smith"</span>})        
     [     
       {       
         _id: ObjectId(<span class="hljs-string">"65c2de7edaf466d38877a4e9"</span>),        
@@ -835,10 +544,10 @@ upsertedCount: 0<br>
     ]
 </div></code></pre>
 <p>Find all patients who are over 15.</p>
-<pre class="hljs"><code><div>    db.patient.find({age: {<span class="hljs-variable">$gt</span>: 15}})
+<pre class="prettyprint"><code><div>    db.patient.find({age: {<span class="hljs-variable">$gt</span>: 15}})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>     [     
+<pre class="prettyprint"><code><div>     [     
        {       
          _id: ObjectId(<span class="hljs-string">"65c2de7edaf466d38877a4e9"</span>),        
          firstName: 'Alan',        
@@ -860,9 +569,24 @@ upsertedCount: 0<br>
      ]
 </div></code></pre>
 <p>Delete all patients with a cold as a disease.</p>
-<pre class="hljs"><code><div>       db.patients.deleteMany({<span class="hljs-string">"history.disease"</span>: <span class="hljs-string">"cold"</span>})
+<pre class="prettyprint"><code><div>       db.patients.deleteMany({<span class="hljs-string">"history.disease"</span>: <span class="hljs-string">"cold"</span>})
 </div></code></pre>
 <p>Deletes 2 documents.</p>
 
+
+
+</div><!-- starter-template -->
+</div><!-- /.container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"/>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
 </body>
 </html>

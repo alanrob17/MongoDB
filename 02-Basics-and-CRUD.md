@@ -4,7 +4,7 @@ Databases, Collections and documents are automatically created when you start wo
 
 ![Databases, collections and documents](assets/images/databases.jpg "Databases, collections and documents")
 
-**Note:** ``collections`` are the equivalent of SQL tables and ``documents`` are the equivalent of a single record on a table.
+**Note:** ``collections`` are the equivalent of SQL tables and ``documents`` are the equivalent of a single record in a table.
 
 ## Create Databases and Collections
 
@@ -32,7 +32,7 @@ Where:
 
 An example of JSON data.
 
-```bash
+```json
     [
       {
         "departureAirport": "MUC",
@@ -57,7 +57,7 @@ We will add each document into ``flightData``.
 
 Copy:
 
-```bash
+```json
     {
         "departureAirport": "MUC",
         "arrivalAirport": "SFO",
@@ -94,24 +94,26 @@ Once you have added both records into the collection you can list each document 
 
 this will list.
 
-> [     
->   {       
->     _id: ObjectId("65c03caf02eb29694d65fd8d"),        
->     departureAirport: 'MUC',      
->     arrivalAirport: 'SFO',        
->     aircraft: 'Airbus A380',      
->     distance: 12000,      
->     intercontinental: true        
->   },      
->   {       
->     _id: ObjectId("65c03d5702eb29694d65fd8e"),        
->     departureAirport: 'LHR',      
->     arrivalAirport: 'TXL',        
->     aircraft: 'Airbus A320',      
->     distance: 950,        
->     intercontinental: false       
->   }       
-> ]
+```json
+    [     
+      {       
+        _id: ObjectId("65c03caf02eb29694d65fd8d"),        
+        departureAirport: 'MUC',      
+        arrivalAirport: 'SFO',        
+        aircraft: 'Airbus A380',      
+        distance: 12000,      
+        intercontinental: true        
+      },      
+      {       
+        _id: ObjectId("65c03d5702eb29694d65fd8e"),        
+        departureAirport: 'LHR',      
+        arrivalAirport: 'TXL',        
+        aircraft: 'Airbus A320',      
+        distance: 950,        
+        intercontinental: false       
+      }       
+    ]
+```
 
 **Note:** MongoDB stores the keys without the double quotes.
 
@@ -126,34 +128,36 @@ MongoDB takes the JSON data and stores it in **Binary JSON** (BSON). This compac
 Now add this document.
 
 ```bash
-    db.fightData.insertOne({departureAirport: "MEL", arrivalAirport: "EDI"})
+    db.flightData.insertOne({departureAirport: "MEL", arrivalAirport: "EDI"})
 ```
 
 Output.
 
-> [     
->   {       
->     _id: ObjectId("65c03caf02eb29694d65fd8d"),        
->     departureAirport: 'MUC',      
->     arrivalAirport: 'SFO',        
->     aircraft: 'Airbus A380',      
->     distance: 12000,      
->     intercontinental: true        
->   },      
->   {       
->     _id: ObjectId("65c03d5702eb29694d65fd8e"),        
->     departureAirport: 'LHR',      
->     arrivalAirport: 'TXL',        
->     aircraft: 'Airbus A320',      
->     distance: 950,        
->     intercontinental: false       
->   },      
->   {       
->     _id: ObjectId("65c048d402eb29694d65fd90"),        
->     departureAirport: 'MEL',      
->     arrivalAirport: 'EDI'     
->   }       
-> ]
+```json
+    [     
+      {       
+        _id: ObjectId("65c03caf02eb29694d65fd8d"),        
+        departureAirport: 'MUC',      
+        arrivalAirport: 'SFO',        
+        aircraft: 'Airbus A380',      
+        distance: 12000,      
+        intercontinental: true        
+      },      
+      {       
+        _id: ObjectId("65c03d5702eb29694d65fd8e"),        
+        departureAirport: 'LHR',      
+        arrivalAirport: 'TXL',        
+        aircraft: 'Airbus A320',      
+        distance: 950,        
+        intercontinental: false       
+      },      
+      {       
+        _id: ObjectId("65c048d402eb29694d65fd90"),        
+        departureAirport: 'MEL',      
+        arrivalAirport: 'EDI'     
+      }       
+    ]
+```
 
 Your documents don't have to have the same schema but you also have to be able to interrogate the data so you have to be aware of the different schemas.
 
@@ -162,16 +166,18 @@ Also note that MongoDB adds id objects for you but you don't have to use them. Y
 You can add this.
 
 ```bash
-    db.fightData.insertOne({departureAirport: "MEL", arrivalAirport: "EDI", _id: "melbourne-edinburgh-1"})
+    db.flightData.insertOne({departureAirport: "MEL", arrivalAirport: "EDI", _id: "melbourne-edinburgh-1"})
 ```
 
 Output.
 
-> {     
->     _id: 'melbourne-edinburgh-1',     
->     departureAirport: 'MEL',      
->     arrivalAirport: 'EDI'     
-> }
+```json
+    {     
+        _id: 'melbourne-edinburgh-1',     
+        departureAirport: 'MEL',      
+        arrivalAirport: 'EDI'     
+    }
+```
 
 ## CRUD operations and MongoDB
 
@@ -237,7 +243,7 @@ Which in our case will do the same thing as the previous method.
 
 We have an empty collection at the moment so open up the ``flight.json`` file and copy the whole file. Now we are going to add a whole array of data.
 
-```bash
+```json
     db.flightData.insertMany([
     ...   {
     .....     "departureAirport": "MUC",
@@ -259,13 +265,15 @@ We have an empty collection at the moment so open up the ``flight.json`` file an
 
 Output:
 
-> {     
->   acknowledged: true,     
->   insertedIds: {      
->     '0': ObjectId("65c06e4402eb29694d65fd91"),        
->     '1': ObjectId("65c06e4402eb29694d65fd92")     
->   }       
-> }
+```json
+    {     
+      acknowledged: true,     
+      insertedIds: {      
+        '0': ObjectId("65c06e4402eb29694d65fd91"),        
+        '1': ObjectId("65c06e4402eb29694d65fd92")     
+      }       
+    }
+```
 
 **Note** when you add an array the id's are very similar with only the last digit being different.
 
@@ -285,16 +293,18 @@ You can do more complex searches. We can pass another object and use one of the 
 
 Returns.
 
-> [     
->   {       
->     _id: ObjectId("65c06e4402eb29694d65fd91"),        
->     departureAirport: 'MUC',      
->     arrivalAirport: 'SFO',        
->     aircraft: 'Airbus A380',      
->     distance: 12000,      
->     intercontinental: true        
->   }       
-> ]
+```json
+    [     
+      {       
+        _id: ObjectId("65c06e4402eb29694d65fd91"),        
+        departureAirport: 'MUC',      
+        arrivalAirport: 'SFO',        
+        aircraft: 'Airbus A380',      
+        distance: 12000,      
+        intercontinental: true        
+      }       
+    ]
+```
 
 This doesn't pick up the document with a distance of 950.
 
@@ -316,15 +326,17 @@ We can update a document using a filter.
 
 Returns.
 
-> {     
->     _id: ObjectId("65c06e4402eb29694d65fd91"),        
->     departureAirport: 'MUC',      
->     arrivalAirport: 'SFO',        
->     aircraft: 'Airbus A380',      
->     distance: 12000,      
->     intercontinental: true,       
->     delayed: true     
-> }
+```json
+    {     
+        _id: ObjectId("65c06e4402eb29694d65fd91"),        
+        departureAirport: 'MUC',      
+        arrivalAirport: 'SFO',        
+        aircraft: 'Airbus A380',      
+        distance: 12000,      
+        intercontinental: true,       
+        delayed: true     
+    }
+```
 
 You could also use.
 
@@ -353,13 +365,15 @@ If we change ``delayed`` to false.
 
 This will update the document
 
-> {     
->   acknowledged: true,     
->   insertedId: null,       
->   matchedCount: 1,        
->   modifiedCount: 1,       
->   upsertedCount: 0        
-> }
+```json
+    {     
+      acknowledged: true,     
+      insertedId: null,       
+      matchedCount: 1,        
+      modifiedCount: 1,       
+      upsertedCount: 0        
+    }
+```
 
 You have to be careful with the ``update()`` method. In earlier versions of MongoDB you could have done.
 
@@ -445,13 +459,15 @@ In ``passengers`` we have three fields, _id, name, age. To use projection and se
 
 Returns.
 
-> [     
->   ...            
->   { _id: ObjectId("65c0896302eb29694d65fda7"), name: 'Gordon Black' },        
->   { _id: ObjectId("65c089dc02eb29694d65fda8"), name: 'Alan Robson' },     
->   { _id: ObjectId("65c089ea02eb29694d65fda9"), name: 'Charley Robson' },      
->   { _id: ObjectId("65c089f702eb29694d65fdaa"), name: 'James Robson' }     
-> ]
+```json
+  [     
+    ...            
+    { _id: ObjectId("65c0896302eb29694d65fda7"), name: 'Gordon Black' },        
+    { _id: ObjectId("65c089dc02eb29694d65fda8"), name: 'Alan Robson' },     
+    { _id: ObjectId("65c089ea02eb29694d65fda9"), name: 'Charley Robson' },      
+    { _id: ObjectId("65c089f702eb29694d65fdaa"), name: 'James Robson' }     
+  ]
+```
 
 This isn't the output we were expecting!
 
@@ -465,15 +481,246 @@ You have to explicitly exclude it from the fields. You can do this with **0** an
 
 Returns.
 
->    ...        
->   { name: 'Gordon Black' },       
->   { name: 'Alan Robson' },        
->   { name: 'Charley Robson' },     
->   { name: 'James Robson' }        
-> ]
+```json
+     ...        
+    { name: 'Gordon Black' },       
+    { name: 'Alan Robson' },        
+    { name: 'Charley Robson' },     
+    { name: 'James Robson' }        
+  ]
+```
 
 We could include or exclude ``age`` as well but the projection configuration will ignore fields that aren't added.
 
 It is important to note that the projection is happening on the MongoDB server and this is what we want to happen. It saves sending data down the wire that we don't need, ie, we don't impact our bandwidth.
 
 ## Embedded documents and arrays
+
+You can embed (nest) documents within documents. 
+
+* Hard limit of 100 documents within a document.
+* A document can have a maximum size of 16 Mb.
+
+An example of embedding a document withing a document.
+
+```bash
+    db.flightData.updateMany({}, {$set: {status: {description: "On-time", lastUpdated: "1 hour ago"}}})
+```
+
+Returns.
+
+```json
+  [     
+    {       
+      _id: ObjectId("65c06e4402eb29694d65fd91"),        
+      departureAirport: 'MUC',      
+      arrivalAirport: 'SFO',        
+      aircraft: 'Airbus A380',      
+      distance: 12000,      
+      intercontinental: true,       
+      status: { description: 'On-time', lastUpdated: '1 hour ago' }     
+    },      
+    ...
+```
+
+### Arrays
+
+Arrays can be any type of data, strings. numbers, etc. It can also be an array of documents.
+
+```bash
+    db.passengers.update({name: 'Alan Robson'}, {$set: {hobbies: ['music', 'reading', 'programming']}})
+```
+
+Returns.
+
+```json
+  {        
+      _id: ObjectId("65c089dc02eb29694d65fda8"),      
+      name: 'Alan Robson',        
+      age: 71,        
+      hobbies: [ 'music', 'reading', 'programming' ]      
+    },
+```
+
+## Accessing structured data
+
+We can access structured data by using the ``.`` or period symbol.
+
+```bash
+    db.passengers.findOne({name: "Alan Robson"}).hobbies
+```
+
+Returns.
+
+> [ 'music', 'reading', 'programming' ]
+
+We can search for a hobbie.
+
+```bash
+    db.passengers.find({hobbies: "programming"})
+```
+
+Returns.
+
+```json
+    [     
+      {       
+        _id: ObjectId("65c089dc02eb29694d65fda8"),        
+        name: 'Alan Robson',      
+        age: 71,      
+        hobbies: [ 'music', 'reading', 'programming' ]        
+      }       
+    ]
+```
+
+We can also search within nested documents.
+
+```bash
+    db.flightData.find({"status.description": "On-time"})
+```
+
+Returns.
+
+```json
+    [     
+      {       
+        _id: ObjectId("65c06e4402eb29694d65fd91"),        
+        departureAirport: 'MUC',      
+        arrivalAirport: 'SFO',        
+        aircraft: 'Airbus A380',      
+        distance: 12000,      
+        intercontinental: true,       
+        status: { description: 'On-time', lastUpdated: '1 hour ago' }     
+      },      
+      ...
+```
+
+**Note:** where you use a dot in your search fields you have to enclose the fields in quotes, ``"status.description"``.
+
+## Assignment 1
+
+Create a ``patients`` database.
+
+```bash
+    use patients
+```
+
+Add a patient document with the following structure
+
+* firstName,
+* lastName,
+* age,
+* history [disease, treatment], [] ...
+
+Insert 3 patient records with at least one history array.
+
+Update 1 patient data with new age name and history entry.
+
+Find all patients who are over 15.
+
+Delete all patients with a cold as a disease.
+
+### My code
+
+Insert one patient.
+
+```bash
+    db.patient.insertOne({ firstName: "Alan", lastName: "Robson", age: 71, history: [{ disease: "cold", treatment: "flu tablets" }, { disease: "sore back", treatment: "back exercises" }] })
+```
+
+3 patients.
+
+```json
+    flights> db.patient.find()
+    [
+      {
+        _id: ObjectId("65c2de7edaf466d38877a4e9"),
+        firstName: 'Alan',
+        lastName: 'Robson',
+        age: 71,
+        history: [ { disease: 'cold', treatment: 'flu tablets' } ]
+      },
+      {
+        _id: ObjectId("65c2df2ddaf466d38877a4ea"),
+        firstName: 'James',
+        lastName: 'Robson',
+        age: 17,
+        history: [
+          { disease: 'cold', treatment: 'flu tablets' },
+          { disease: 'ear ache', treatment: 'antibiotics' },
+          { disease: 'wobbles', treatment: 'exercise' }
+        ]
+      },
+      {
+        _id: ObjectId("65c2df69daf466d38877a4eb"),
+        firstName: 'Charley',
+        lastName: 'Robson',
+        age: 12,
+        history: [
+          { disease: 'cold', treatment: 'flu tablets' },
+          { disease: 'sore arm', treatment: 'sling' },
+          { disease: 'shakes', treatment: 'tablets' }
+        ]
+      }
+    ]
+```
+
+Update 1 patient.
+
+```bash
+db.patient.updateOne({ firstName: "Alan" }, { $set: { lastName: "Smith", age: 77, history: [{ disease: "flu", treatment: "flu tablets" }] } })
+```
+
+Find with a lastName of Smith.
+
+```json
+    flights> db.patient.find({lastName: "Smith"})        
+    [     
+      {       
+        _id: ObjectId("65c2de7edaf466d38877a4e9"),        
+        firstName: 'Alan',        
+        lastName: 'Smith',        
+        age: 77,      
+        history: [ { disease: 'flu', treatment: 'flu tablets' } ]     
+      }       
+    ]
+```
+
+Find all patients who are over 15.
+
+```bash
+    db.patient.find({age: {$gt: 15}})
+```
+
+Returns.
+
+```json
+     [     
+       {       
+         _id: ObjectId("65c2de7edaf466d38877a4e9"),        
+         firstName: 'Alan',        
+         lastName: 'Smith',        
+         age: 77,      
+         history: [ { disease: 'flu', treatment: 'flu tablets' } ]     
+       },      
+       {       
+    _id: ObjectId("65c2df2ddaf466d38877a4ea"),        
+         firstName: 'James',       
+         lastName: 'Robson',       
+         age: 17,      
+         history: [        
+           { disease: 'cold', treatment: 'flu tablets' },      
+           { disease: 'ear ache', treatment: 'antibiotics' },      
+           { disease: 'wobbles', treatment: 'exercise' }       
+         ]     
+       }       
+     ]
+```
+
+Delete all patients with a cold as a disease.
+
+```bash
+       db.patients.deleteMany({"history.disease": "cold"})
+```
+
+Deletes 2 documents.
