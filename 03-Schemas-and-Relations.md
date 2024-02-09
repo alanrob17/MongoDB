@@ -132,5 +132,339 @@ Let's drop the companies collection.
 If you wanted to delete the database.
 
 ```bash
-    db.companyData.dropDatabase()
+    use companyData
+    db.dropDatabase()
 ```
+
+Another thing you can do is get statistics from a database
+
+```bash
+  use family
+
+  db.stats()
+```
+
+Returns.
+
+```json
+  {
+    db: 'family',
+    collections: Long('1'),
+    views: Long('0'),
+    objects: Long('3'),
+    avgObjSize: 54.333333333333336,
+    dataSize: 163,
+    storageSize: 36864,
+    indexes: Long('1'),
+    indexSize: 36864,
+    totalSize: 73728,
+    scaleFactor: Long('1'),
+    fsUsedSize: 316198912,
+    fsTotalSize: 8359411712,
+    ok: 1
+  }
+```
+
+## Numbers in more detail
+
+```bash
+  use numberData
+
+  db.numbers.insertOne({a: 1})
+```
+
+A number value in this case is a 64 bit floating number.
+
+If you want to specify a type you can use the following function.
+
+```bash
+  db.numbers.insertOne({b: NumberInt(1)})
+```
+
+In this case the number is a 32 bit int.
+
+**Note:** the reason this happens is because the ``mongosh`` shell is based on JavaScript and JavaScript doesn't differentiate between number types. The are all 46 bit floating point numbers.
+
+You can check the type of a field.
+
+```bash
+  typeof db.numbers.findOne().b
+```
+
+In my case I get an **undefined** result which is a bit disconcerting. If I do the same command on the ``a`` document I get the **number** result.
+
+## How to derive your data structure requirements
+
+![schemas-and modelling](assets/images/modelling.jpg "schemas-and modelling")
+
+## Understanding relations
+
+![schemas-and modelling](assets/images/modelling.jpg "schemas-and modelling")
+
+You can nest or embed documents or you can create related collections (references).
+
+In the first reference example you are using a user and their favourite books. If you have a lot of users who have the same favourite books there is a lot of redundancy. When you have to change the spelling of one favourite book you have to go through all documents to change the spelling where the book name is used.
+
+Better to create a customers collection and a books collection and relate the two collections to each other.
+
+## One-one relations (embedded)
+
+Where one patient has one aliments summary only, so one patient, one summary.
+
+An example.
+
+```bash
+  db.patients.insertOne({name: "Alan Robson", age: 71, diseaseSummary: "summary-alan-1"})
+```
+
+Create another collection.
+
+```bash
+  db.diseaseSummaries.insertOne({_id: "summary-alan-1", diseases: ["bad back", "neck ache", "ear ache"]})
+```
+
+To query.
+
+```bash
+  db.patients.findOne()
+```
+
+Will find the one and only patient. But I want to find that patients diseases.
+
+I could do this.
+
+```bash
+  db.patients.findOne().diseaseSummary
+```
+
+It returns.
+
+> summary-alan-1
+
+This still doesn't give me what I need. I could create a variable.
+
+```bash
+  let dsid = db.patients.findOne().diseaseSummary
+```
+
+Now if I type
+
+```bash
+  dsid
+```
+
+It will return.
+
+> summary-alan-1
+
+I can use this variable.
+
+```bash
+  db.diseaseSummaries.findOne({_id: dsid})
+```
+
+Returns.
+
+```json
+  {
+    _id: 'summary-alan-1',
+    diseases: [ 'bad back', 'neck ache', 'ear ache' ]
+  }
+```
+
+The problem with this is it takes two steps.
+
+Let's delete this patient.
+
+```bash
+  db.patients.deleteMany({})
+```
+
+Change the patient record to embed the dieases.
+
+```bash
+  db.patients.insertOne({name: "Alan Robson", age: 71, diseaseSummary: {diseases: ["bad back", "neck ache", "ear ache"]}})
+```
+
+You can now do a simple query to get the results.
+
+```json
+  {
+    _id: ObjectId('65c57d38aeac807bbb5b8a24'),
+    name: 'Alan Robson',
+    age: 71,
+    diseaseSummary: { diseases: [ 'bad back', 'neck ache', 'ear ache' ] }
+  }
+```
+
+The embedded document makes more sense in this case. There will be other cases where splitting data into two collections is preferable especially when you are doing analytics on the data.
+
+## One-to-Many relationships
+
+Can also be two collections **or** embedded documents.
+
+## Many-to-Many relationships
+
+You could have many customers who buy many products.
+
+Add a product.
+
+```bash
+  db.products.insertOne({title: "A book", price: 12.99})
+```
+
+Returns.
+
+```json
+  {
+    acknowledged: true,
+    insertedId: ObjectId('65c599fd29c972fe5ef97a09')
+  }
+```
+
+Add a customer.
+
+```bash
+  db.customers.insertOne({name: "Alan Robson", age: 71})
+```
+
+Returns.
+
+```json
+  {
+    acknowledged: true,
+    insertedId: ObjectId('65c59a4029c972fe5ef97a0a')
+  }
+```
+
+Add an order.
+
+```bash
+db.orders.insertOne({customer: ObjectId('65c59a4029c972fe5ef97a0a'), product: ObjectId('65c599fd29c972fe5ef97a09')
+```
+
+Returns.
+
+```json
+  {
+    acknowledged: true,
+    insertedId: ObjectId('65c59a9e29c972fe5ef97a0b')
+  }
+```
+
+This is the SQL way of doing things.
+
+We will drop the orders collection.
+
+```bash
+  db.orders.drop()
+```
+
+Now we will modify the customers collection to add an order.
+
+```bash
+db.customers.updateOne({}, {$set: {orders: [{productid: ObjectId('65c599fd29c972fe5ef97a09'), quantity: 2}]}})
+```
+
+## Summary
+
+![relations-options](assets/images/relations-options.jpg "relations-options")
+
+## Using lookUp() for merging reference relations
+
+![lookup merging](assets/images/lookup.jpg "lookup merging")
+
+You have an ``aggregate`` function that allows you to merge data together.
+
+Build the collections.
+
+### Authors
+
+```bash
+  db.authors.insertOne({name: "Alan Robson"})
+```
+
+returns.
+
+```json
+  {
+    acknowledged: true,
+    insertedId: ObjectId('65c5ae6929c972fe5ef97a0c')
+  }
+```
+
+Next.
+
+```bash
+  db.authors.insertOne({name: "James Robson"})
+```
+
+returns.
+
+```json
+  {
+    acknowledged: true,
+    insertedId: ObjectId('65c5ae7329c972fe5ef97a0d')
+  }
+```
+
+### Books
+
+```bash
+db.books.insertOne({name: "MongoDB and Python", authors: [ObjectId('65c5ae6929c972fe5ef97a0c'), ObjectId('65c5ae7329c972fe5ef97a0d')]})
+```
+
+Now to use ``$lookup`` and merge on relationships.
+
+```bash
+db.books.aggregate([{$lookup: {from: "authors", localField: "authors", foreignField: "_id", as: "Authors"}}])
+```
+
+Build the command.
+
+With ``db.books.aggregate([])``, we use an array because we can define multiple steps on aggregating our data.
+
+We will pass a document into the array, ``db.books.aggregate([{}])``
+
+Next, use the ``$lookup()`` set, ``db.books.aggregate([{$lookup: }])``. we then pass in a document as a value.
+
+``db.books.aggregate([{$lookup: {}}])`` and here you need to define 4 things.
+
+1. ``from``, the question here is which other collection do you need to relate documents with and in our case it is the ``authors`` collection, ``db.books.aggregate([{$lookUp: {from: "authors"}}])``.
+
+2. ``localField``, where can we find the field that will be used to relate and this will be ``books.author`` field, ``db.books.aggregate([{$lookup: {from: "authors", localField: "authors"}}])``. ``authors`` in this case is a set of **_ids**.
+
+3. ``foreignField``, is the corresponding field in the ``authors`` collection, in this case ``_id``. ``db.books.aggregate([{$lookup: {from: "authors", localField: "authors", foreignField: "_id"}}])``.
+
+4. ``as``, is an alias, ``db.books.aggregate([{$lookup: {from: "authors", localField: "authors", foreignField: "_id", as: "Authors"}}])``. This can be any name to describe the content you want to bring back.
+
+Returns.
+
+```json
+  [
+    {
+      _id: ObjectId('65c5aef129c972fe5ef97a0e'),
+      name: 'MongoDB and Python',
+      authors: [
+        ObjectId('65c5ae6929c972fe5ef97a0c'),
+        ObjectId('65c5ae7329c972fe5ef97a0d')
+      ],
+      Authors: [
+        {
+          _id: ObjectId('65c5ae6929c972fe5ef97a0c'),
+          name: 'Alan Robson'
+        },
+        {
+          _id: ObjectId('65c5ae7329c972fe5ef97a0d'),
+          name: 'James Robson'
+        }
+      ]
+    }
+  ]
+```
+
+This data is the merge of the two collections, ``books`` and ``authors``.
+
+This is more intensive than using embedded documents.
+
+This example is just one way of using references.

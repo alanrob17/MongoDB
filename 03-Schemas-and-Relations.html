@@ -424,6 +424,257 @@ code {
 </div></code></pre>
 <p>In MongoDB there is no preferred way to do things.</p>
 <h2 id="data-types">Data types</h2>
+<p>Text<br>
+Boolean<br>
+Number</p>
+<ul>
+<li>Integer (Int32)</li>
+<li>Long (Int64)</li>
+<li>Decimal</li>
+<li>ObjectId</li>
+</ul>
+<p>IsoDate (2024-02-08) - Timestamp<br>
+Embedded document<br>
+Array</p>
+<p>An example.</p>
+<pre class="hljs"><code><div>db.companies.insertOne({name: <span class="hljs-string">"Fresh Apples Inc"</span>, isStartup: <span class="hljs-literal">true</span>, employees: 33, funding: 12345678901234567890, details: {ceo: <span class="hljs-string">"James Robson"</span>}, tags: [{title: <span class="hljs-string">"super"</span>},{title: <span class="hljs-string">"perfect"</span>}], foundingDate: new Date(), insertedAt: new Timestamp()})
+</div></code></pre>
+<p>Returns.</p>
+<pre class="hljs"><code><div>    [
+      {
+        _id: ObjectId('<span class="hljs-number">65</span>c4a6d526beb523ade13a05'),
+        name: 'Fresh Apples Inc',
+        isStartup: <span class="hljs-literal">true</span>,
+        employees: <span class="hljs-number">33</span>,
+        funding: <span class="hljs-number">12345678901234567000</span>,
+        details: { ceo: 'James Robson' },
+        tags: [ { title: 'super' }, { title: 'perfect' } ],
+        foundingDate: ISODate('<span class="hljs-number">2024</span><span class="hljs-number">-02</span><span class="hljs-number">-08</span>T10:<span class="hljs-number">03</span>:<span class="hljs-number">01.949</span>Z'),
+        insertedAt: Timestamp({ t: <span class="hljs-number">1707386581</span>, i: <span class="hljs-number">1</span> })
+      }
+    ]
+</div></code></pre>
+<p><strong>Note:</strong> <code>new Date()</code> and <code>new Timestamp()</code> are JavaScript functions that are available because the shell is build in Node.js.</p>
+<p>Also note that the <code>funding</code> value doesn't contain the number that we entered. This is because we put in a number that was too big.</p>
+<p>If you need to put in really large numbers you might have to enter them as a string.</p>
+<p>Let's drop the companies collection.</p>
+<pre class="hljs"><code><div>    db.companies.drop()
+</div></code></pre>
+<p>If you wanted to delete the database.</p>
+<pre class="hljs"><code><div>    use companyData
+    db.dropDatabase()
+</div></code></pre>
+<p>Another thing you can do is get statistics from a database</p>
+<pre class="hljs"><code><div>  use family
+
+  db.stats()
+</div></code></pre>
+<p>Returns.</p>
+<pre class="hljs"><code><div>  {
+    db: 'family',
+    collections: Long('<span class="hljs-number">1</span>'),
+    views: Long('<span class="hljs-number">0</span>'),
+    objects: Long('<span class="hljs-number">3</span>'),
+    avgObjSize: <span class="hljs-number">54.333333333333336</span>,
+    dataSize: <span class="hljs-number">163</span>,
+    storageSize: <span class="hljs-number">36864</span>,
+    indexes: Long('<span class="hljs-number">1</span>'),
+    indexSize: <span class="hljs-number">36864</span>,
+    totalSize: <span class="hljs-number">73728</span>,
+    scaleFactor: Long('<span class="hljs-number">1</span>'),
+    fsUsedSize: <span class="hljs-number">316198912</span>,
+    fsTotalSize: <span class="hljs-number">8359411712</span>,
+    ok: <span class="hljs-number">1</span>
+  }
+</div></code></pre>
+<h2 id="numbers-in-more-detail">Numbers in more detail</h2>
+<pre class="hljs"><code><div>  use numberData
+
+  db.numbers.insertOne({a: 1})
+</div></code></pre>
+<p>A number value in this case is a 64 bit floating number.</p>
+<p>If you want to specify a type you can use the following function.</p>
+<pre class="hljs"><code><div>  db.numbers.insertOne({b: NumberInt(1)})
+</div></code></pre>
+<p>In this case the number is a 32 bit int.</p>
+<p><strong>Note:</strong> the reason this happens is because the <code>mongosh</code> shell is based on JavaScript and JavaScript doesn't differentiate between number types. The are all 46 bit floating point numbers.</p>
+<p>You can check the type of a field.</p>
+<pre class="hljs"><code><div>  typeof db.numbers.findOne().b
+</div></code></pre>
+<p>In my case I get an <strong>undefined</strong> result which is a bit disconcerting. If I do the same command on the <code>a</code> document I get the <strong>number</strong> result.</p>
+<h2 id="how-to-derive-your-data-structure-requirements">How to derive your data structure requirements</h2>
+<p><img src="assets/images/modelling.jpg" alt="schemas-and modelling" title="schemas-and modelling"></p>
+<h2 id="understanding-relations">Understanding relations</h2>
+<p><img src="assets/images/modelling.jpg" alt="schemas-and modelling" title="schemas-and modelling"></p>
+<p>You can nest or embed documents or you can create related collections (references).</p>
+<p>In the first reference example you are using a user and their favourite books. If you have a lot of users who have the same favourite books there is a lot of redundancy. When you have to change the spelling of one favourite book you have to go through all documents to change the spelling where the book name is used.</p>
+<p>Better to create a customers collection and a books collection and relate the two collections to each other.</p>
+<h2 id="one-one-relations-embedded">One-one relations (embedded)</h2>
+<p>Where one patient has one aliments summary only, so one patient, one summary.</p>
+<p>An example.</p>
+<pre class="hljs"><code><div>  db.patients.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71, diseaseSummary: <span class="hljs-string">"summary-alan-1"</span>})
+</div></code></pre>
+<p>Create another collection.</p>
+<pre class="hljs"><code><div>  db.diseaseSummaries.insertOne({_id: <span class="hljs-string">"summary-alan-1"</span>, diseases: [<span class="hljs-string">"bad back"</span>, <span class="hljs-string">"neck ache"</span>, <span class="hljs-string">"ear ache"</span>]})
+</div></code></pre>
+<p>To query.</p>
+<pre class="hljs"><code><div>  db.patients.findOne()
+</div></code></pre>
+<p>Will find the one and only patient. But I want to find that patients diseases.</p>
+<p>I could do this.</p>
+<pre class="hljs"><code><div>  db.patients.findOne().diseaseSummary
+</div></code></pre>
+<p>It returns.</p>
+<blockquote>
+<p>summary-alan-1</p>
+</blockquote>
+<p>This still doesn't give me what I need. I could create a variable.</p>
+<pre class="hljs"><code><div>  <span class="hljs-built_in">let</span> dsid = db.patients.findOne().diseaseSummary
+</div></code></pre>
+<p>Now if I type</p>
+<pre class="hljs"><code><div>  dsid
+</div></code></pre>
+<p>It will return.</p>
+<blockquote>
+<p>summary-alan-1</p>
+</blockquote>
+<p>I can use this variable.</p>
+<pre class="hljs"><code><div>  db.diseaseSummaries.findOne({_id: dsid})
+</div></code></pre>
+<p>Returns.</p>
+<pre class="hljs"><code><div>  {
+    _id: 'summary-alan<span class="hljs-number">-1</span>',
+    diseases: [ 'bad back', 'neck ache', 'ear ache' ]
+  }
+</div></code></pre>
+<p>The problem with this is it takes two steps.</p>
+<p>Let's delete this patient.</p>
+<pre class="hljs"><code><div>  db.patients.deleteMany({})
+</div></code></pre>
+<p>Change the patient record to embed the dieases.</p>
+<pre class="hljs"><code><div>  db.patients.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71, diseaseSummary: {diseases: [<span class="hljs-string">"bad back"</span>, <span class="hljs-string">"neck ache"</span>, <span class="hljs-string">"ear ache"</span>]}})
+</div></code></pre>
+<p>You can now do a simple query to get the results.</p>
+<pre class="hljs"><code><div>  {
+    _id: ObjectId('<span class="hljs-number">65</span>c57d38aeac807bbb5b8a24'),
+    name: 'Alan Robson',
+    age: <span class="hljs-number">71</span>,
+    diseaseSummary: { diseases: [ 'bad back', 'neck ache', 'ear ache' ] }
+  }
+</div></code></pre>
+<p>The embedded document makes more sense in this case. There will be other cases where splitting data into two collections is preferable especially when you are doing analytics on the data.</p>
+<h2 id="one-to-many-relationships">One-to-Many relationships</h2>
+<p>Can also be two collections <strong>or</strong> embedded documents.</p>
+<h2 id="many-to-many-relationships">Many-to-Many relationships</h2>
+<p>You could have many customers who buy many products.</p>
+<p>Add a product.</p>
+<pre class="hljs"><code><div>  db.products.insertOne({title: <span class="hljs-string">"A book"</span>, price: 12.99})
+</div></code></pre>
+<p>Returns.</p>
+<pre class="hljs"><code><div>  {
+    acknowledged: <span class="hljs-literal">true</span>,
+    insertedId: ObjectId('<span class="hljs-number">65</span>c599fd29c972fe5ef97a09')
+  }
+</div></code></pre>
+<p>Add a customer.</p>
+<pre class="hljs"><code><div>  db.customers.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71})
+</div></code></pre>
+<p>Returns.</p>
+<pre class="hljs"><code><div>  {
+    acknowledged: <span class="hljs-literal">true</span>,
+    insertedId: ObjectId('<span class="hljs-number">65</span>c59a4029c972fe5ef97a0a')
+  }
+</div></code></pre>
+<p>Add an order.</p>
+<pre class="hljs"><code><div>db.orders.insertOne({customer: ObjectId(<span class="hljs-string">'65c59a4029c972fe5ef97a0a'</span>), product: ObjectId(<span class="hljs-string">'65c599fd29c972fe5ef97a09'</span>)
+</div></code></pre>
+<p>Returns.</p>
+<pre class="hljs"><code><div>  {
+    acknowledged: <span class="hljs-literal">true</span>,
+    insertedId: ObjectId('<span class="hljs-number">65</span>c59a9e29c972fe5ef97a0b')
+  }
+</div></code></pre>
+<p>This is the SQL way of doing things.</p>
+<p>We will drop the orders collection.</p>
+<pre class="hljs"><code><div>  db.orders.drop()
+</div></code></pre>
+<p>Now we will modify the customers collection to add an order.</p>
+<pre class="hljs"><code><div>db.customers.updateOne({}, {<span class="hljs-variable">$set</span>: {orders: [{productid: ObjectId(<span class="hljs-string">'65c599fd29c972fe5ef97a09'</span>), quantity: 2}]}})
+</div></code></pre>
+<h2 id="summary">Summary</h2>
+<p><img src="assets/images/relations-options.jpg" alt="relations-options" title="relations-options"></p>
+<h2 id="using-lookup-for-merging-reference-relations">Using lookUp() for merging reference relations</h2>
+<p><img src="assets/images/lookup.jpg" alt="lookup merging" title="lookup merging"></p>
+<p>You have an <code>aggregate</code> function that allows you to merge data together.</p>
+<p>Build the collections.</p>
+<h3 id="authors">Authors</h3>
+<pre class="hljs"><code><div>  db.authors.insertOne({name: <span class="hljs-string">"Alan Robson"</span>})
+</div></code></pre>
+<p>returns.</p>
+<pre class="hljs"><code><div>  {
+    acknowledged: <span class="hljs-literal">true</span>,
+    insertedId: ObjectId('<span class="hljs-number">65</span>c5ae6929c972fe5ef97a0c')
+  }
+</div></code></pre>
+<p>Next.</p>
+<pre class="hljs"><code><div>  db.authors.insertOne({name: <span class="hljs-string">"James Robson"</span>})
+</div></code></pre>
+<p>returns.</p>
+<pre class="hljs"><code><div>  {
+    acknowledged: <span class="hljs-literal">true</span>,
+    insertedId: ObjectId('<span class="hljs-number">65</span>c5ae7329c972fe5ef97a0d')
+  }
+</div></code></pre>
+<h3 id="books">Books</h3>
+<pre class="hljs"><code><div>db.books.insertOne({name: <span class="hljs-string">"MongoDB and Python"</span>, authors: [ObjectId(<span class="hljs-string">'65c5ae6929c972fe5ef97a0c'</span>), ObjectId(<span class="hljs-string">'65c5ae7329c972fe5ef97a0d'</span>)]})
+</div></code></pre>
+<p>Now to use <code>$lookup</code> and merge on relationships.</p>
+<pre class="hljs"><code><div>db.books.aggregate([{<span class="hljs-variable">$lookup</span>: {from: <span class="hljs-string">"authors"</span>, localField: <span class="hljs-string">"authors"</span>, foreignField: <span class="hljs-string">"_id"</span>, as: <span class="hljs-string">"Authors"</span>}}])
+</div></code></pre>
+<p>Build the command.</p>
+<p>With <code>db.books.aggregate([])</code>, we use an array because we can define multiple steps on aggregating our data.</p>
+<p>We will pass a document into the array, <code>db.books.aggregate([{}])</code></p>
+<p>Next, use the <code>$lookup()</code> set, <code>db.books.aggregate([{$lookup: }])</code>. we then pass in a document as a value.</p>
+<p><code>db.books.aggregate([{$lookup: {}}])</code> and here you need to define 4 things.</p>
+<ol>
+<li>
+<p><code>from</code>, the question here is which other collection do you need to relate documents with and in our case it is the <code>authors</code> collection, <code>db.books.aggregate([{$lookUp: {from: &quot;authors&quot;}}])</code>.</p>
+</li>
+<li>
+<p><code>localField</code>, where can we find the field that will be used to relate and this will be <code>books.author</code> field, <code>db.books.aggregate([{$lookup: {from: &quot;authors&quot;, localField: &quot;authors&quot;}}])</code>. <code>authors</code> in this case is a set of <strong>_ids</strong>.</p>
+</li>
+<li>
+<p><code>foreignField</code>, is the corresponding field in the <code>authors</code> collection, in this case <code>_id</code>. <code>db.books.aggregate([{$lookup: {from: &quot;authors&quot;, localField: &quot;authors&quot;, foreignField: &quot;_id&quot;}}])</code>.</p>
+</li>
+<li>
+<p><code>as</code>, is an alias, <code>db.books.aggregate([{$lookup: {from: &quot;authors&quot;, localField: &quot;authors&quot;, foreignField: &quot;_id&quot;, as: &quot;Authors&quot;}}])</code>. This can be any name to describe the content you want to bring back.</p>
+</li>
+</ol>
+<p>Returns.</p>
+<pre class="hljs"><code><div>  [
+    {
+      _id: ObjectId('<span class="hljs-number">65</span>c5aef129c972fe5ef97a0e'),
+      name: 'MongoDB and Python',
+      authors: [
+        ObjectId('<span class="hljs-number">65</span>c5ae6929c972fe5ef97a0c'),
+        ObjectId('<span class="hljs-number">65</span>c5ae7329c972fe5ef97a0d')
+      ],
+      Authors: [
+        {
+          _id: ObjectId('<span class="hljs-number">65</span>c5ae6929c972fe5ef97a0c'),
+          name: 'Alan Robson'
+        },
+        {
+          _id: ObjectId('<span class="hljs-number">65</span>c5ae7329c972fe5ef97a0d'),
+          name: 'James Robson'
+        }
+      ]
+    }
+  ]
+</div></code></pre>
+<p>This data is the merge of the two collections, <code>books</code> and <code>authors</code>.</p>
+<p>This is more intensive than using embedded documents.</p>
+<p>This example is just one way of using references.</p>
 
 </body>
 </html>
