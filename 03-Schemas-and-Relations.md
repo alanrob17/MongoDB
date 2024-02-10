@@ -468,3 +468,255 @@ This data is the merge of the two collections, ``books`` and ``authors``.
 This is more intensive than using embedded documents.
 
 This example is just one way of using references.
+
+## Assignment 2 - A Blog site
+
+![A Blog site](assets/images/blog.jpg "A Blog site")
+
+This is what our fictional Blog site will be able to do. We need to work out the collections that will be required to power our Blog site.
+
+### Collections
+
+* User
+* Post
+
+Once we do this we will work out the fields that will be needed for each collection.
+
+### Fields
+
+#### Users
+
+* _id
+* name
+* age
+* email
+
+#### Posts
+
+* _id
+* title
+* text
+* tags []
+* comments []
+
+### Create the collections
+
+```bash
+  use blog
+```
+
+### Create users
+
+```bash
+  db.users.insertOne({name: "Alan Robson", age: 71, email: "alan@alan.com"})
+```
+
+Users.
+
+```json
+  [
+    {
+      _id: ObjectId('65c6b9ed738e85e2bcffbbd6'),
+      name: 'Alan Robson',
+      age: 71,
+      email: 'alan@alan.com'
+    },
+    {
+      _id: ObjectId('65c6ba01738e85e2bcffbbd7'),
+      name: 'James Robson',
+      age: 17,
+      email: 'james@james.com'
+    },
+    {
+      _id: ObjectId('65c6ba25738e85e2bcffbbd8'),
+      name: 'Charley Robson',
+      age: 12,
+      email: 'charley@charley.com'
+    }
+  ]
+```
+
+### Create posts
+
+```bash
+db.posts.insertOne({title: "My first post", text: "This is the text for my first post...", tags: ["blog", "personal", "boring"], creator: ObjectId('65c6b9ed738e85e2bcffbbd6'), comments: [{text: "blah, blah, blah", author: ObjectId('65c6ba01738e85e2bcffbbd7')},{text: "wow, not interesting:", author: ObjectId('65c6ba25738e85e2bcffbbd8')}]})
+```
+
+#### Use aggregation to get data from multiple tables
+
+```bash
+db.users.aggregate([{$lookup: {from: "posts", localField: "_id", foreignField: "creator", as: "Post"}}])
+```
+
+Returns.
+
+```json
+  [
+    {
+      _id: ObjectId('65c6b9ed738e85e2bcffbbd6'),
+      name: 'Alan Robson',
+      age: 71,
+      email: 'alan@alan.com',
+      Post: [
+        {
+          _id: ObjectId('65c6bcd5738e85e2bcffbbd9'),
+          title: 'My first post',
+          text: 'This is the text for my first post...',
+          tags: [ 'blog', 'personal', 'boring' ],
+          creator: ObjectId('65c6b9ed738e85e2bcffbbd6'),
+          comments: [
+            {
+              text: 'blah, blah, blah',
+              author: ObjectId('65c6ba01738e85e2bcffbbd7')
+            },
+            {
+              text: 'wow, not interesting:',
+              author: ObjectId('65c6ba25738e85e2bcffbbd8')
+            }
+          ]
+        }
+      ]
+    },
+    {
+      _id: ObjectId('65c6ba01738e85e2bcffbbd7'),
+      name: 'James Robson',
+      age: 17,
+      email: 'james@james.com',
+      Post: []
+    },
+    {
+      _id: ObjectId('65c6ba25738e85e2bcffbbd8'),
+      name: 'Charley Robson',
+      age: 12,
+      email: 'charley@charley.com',
+      Post: []
+    }
+  ]
+```
+
+I can get at most of the data except for finding out who wrote the comments.
+
+## Understanding schema validation
+
+![schema validation](assets/images/schema-validation.jpg "schema validation")
+
+We can add a schema validation to each collection. In our example we are going to drop the ``posts`` collection and create the following schema.
+
+Use a text editor to build this command.
+
+The first thing you do in this script is to add a ``validator`` document.
+
+Next, there are three things you can enter into the JSON schema.
+
+* bsonType
+* required
+* properties
+
+Each property has a ``type`` and ``description``.
+
+```bash
+  db.createCollection('posts', {
+    validator: {
+      $jsonSchema: {
+        bsonType: 'object',
+        required: ['title', 'text', 'creator', 'comments'],
+        properties: {
+          title: {
+            bsonType: 'string',
+            description: 'must be a string and is required'
+          },
+          text: {
+            bsonType: 'string',
+            description: 'must be a string and is required'
+          },
+          creator: {
+            bsonType: 'objectId',
+            description: 'must be an objectid and is required'
+          },
+          comments: {
+            bsonType: 'array',
+            description: 'must be an array and is required',
+            items: {
+              bsonType: 'object',
+              required: ['text', 'author'],
+              properties: {
+                text: {
+                  bsonType: 'string',
+                  description: 'must be a string and is required'
+                },
+                author: {
+                  bsonType: 'objectId',
+                  description: 'must be an objectid and is required'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+```
+
+**Note:** if you leave the semi-colon at the end of this script and then enter the script into the ``mongosh`` shell it will automatically execute.
+
+### Changing the validationAction
+
+In the previous example we didn't add a ``validationAction`` so it will automatically stop once an error is hit and won't add or update that command.
+
+We have the option to change the severity.
+
+As we have added validation to our collection we now have to update the schema for the collection.
+
+```bash
+  db.runCommand({
+    collMod: 'posts',
+    validator: {
+      $jsonSchema: {
+        bsonType: 'object',
+        required: ['title', 'text', 'creator', 'comments'],
+        properties: {
+          title: {
+            bsonType: 'string',
+            description: 'must be a string and is required'
+          },
+          text: {
+            bsonType: 'string',
+            description: 'must be a string and is required'
+          },
+          creator: {
+            bsonType: 'objectId',
+            description: 'must be an objectid and is required'
+          },
+          comments: {
+            bsonType: 'array',
+            description: 'must be an array and is required',
+            items: {
+              bsonType: 'object',
+              required: ['text', 'author'],
+              properties: {
+                text: {
+                  bsonType: 'string',
+                  description: 'must be a string and is required'
+                },
+                author: {
+                  bsonType: 'objectId',
+                  description: 'must be an objectid and is required'
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    validationAction: 'warn'
+  });
+```
+
+This command is just about identical to the last command except for the ``validationAction`` at the bottom.
+
+There are two severities.
+
+* error
+* warn
+
+If you don't specify a ``validationAction`` it will default to **error**.

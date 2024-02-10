@@ -1,370 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>03-Schemas-and-Relations.md</title>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-
-<style>
-/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
-body {
-	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
-	font-size: var(--vscode-markdown-font-size, 14px);
-	padding: 0 26px;
-	line-height: var(--vscode-markdown-line-height, 22px);
-	word-wrap: break-word;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>03 - Schemas and Relations</title>
+<link href="assets/css/bootstrap.css" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="assets/css/starter-template.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?lang=css&amp;skin=sunburst"></script>
+<style type="text/css">
+html {
+	font-size: 80.0%;
 }
 
-#code-csp-warning {
-	position: fixed;
-	top: 0;
-	right: 0;
-	color: white;
-	margin: 16px;
-	text-align: center;
-	font-size: 12px;
-	font-family: sans-serif;
-	background-color:#444444;
-	cursor: pointer;
-	padding: 6px;
-	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+h2 {
+	margin-top: 60px;
 }
 
-#code-csp-warning:hover {
-	text-decoration: none;
-	background-color:#007acc;
-	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+h4, h3 {
+	padding-top: 40px!;		
 }
 
-body.scrollBeyondLastLine {
-	margin-bottom: calc(100vh - 22px);
+p {
+	font-size: 1.2em;
+}
+h4 {
+	font-size: 1.4em;
 }
 
-body.showEditorSelection .code-line {
-	position: relative;
+img, pre.prettyprint {
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
 }
+h1, h2, h3, h4, h5, h6 {
+    color:#007bff;
 
-body.showEditorSelection .code-active-line:before,
-body.showEditorSelection .code-line:hover:before {
-	content: "";
-	display: block;
-	position: absolute;
-	top: 0;
-	left: -12px;
-	height: 100%;
 }
-
-body.showEditorSelection li.code-active-line:before,
-body.showEditorSelection li.code-line:hover:before {
-	left: -30px;
-}
-
-.vscode-light.showEditorSelection .code-active-line:before {
-	border-left: 3px solid rgba(0, 0, 0, 0.15);
-}
-
-.vscode-light.showEditorSelection .code-line:hover:before {
-	border-left: 3px solid rgba(0, 0, 0, 0.40);
-}
-
-.vscode-light.showEditorSelection .code-line .code-line:hover:before {
-	border-left: none;
-}
-
-.vscode-dark.showEditorSelection .code-active-line:before {
-	border-left: 3px solid rgba(255, 255, 255, 0.4);
-}
-
-.vscode-dark.showEditorSelection .code-line:hover:before {
-	border-left: 3px solid rgba(255, 255, 255, 0.60);
-}
-
-.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
-	border-left: none;
-}
-
-.vscode-high-contrast.showEditorSelection .code-active-line:before {
-	border-left: 3px solid rgba(255, 160, 0, 0.7);
-}
-
-.vscode-high-contrast.showEditorSelection .code-line:hover:before {
-	border-left: 3px solid rgba(255, 160, 0, 1);
-}
-
-.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
-	border-left: none;
-}
-
-img {
-	max-width: 100%;
-	max-height: 100%;
-}
-
-a {
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
-a:focus,
-input:focus,
-select:focus,
-textarea:focus {
-	outline: 1px solid -webkit-focus-ring-color;
-	outline-offset: -1px;
-}
-
-hr {
-	border: 0;
-	height: 2px;
-	border-bottom: 2px solid;
-}
-
-h1 {
-	padding-bottom: 0.3em;
-	line-height: 1.2;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-}
-
-h1, h2, h3 {
-	font-weight: normal;
-}
-
-table {
-	border-collapse: collapse;
-}
-
-table > thead > tr > th {
-	text-align: left;
-	border-bottom: 1px solid;
-}
-
-table > thead > tr > th,
-table > thead > tr > td,
-table > tbody > tr > th,
-table > tbody > tr > td {
-	padding: 5px 10px;
-}
-
-table > tbody > tr + tr > td {
-	border-top: 1px solid;
-}
-
 blockquote {
-	margin: 0 7px 0 5px;
-	padding: 0 16px 0 10px;
-	border-left-width: 5px;
-	border-left-style: solid;
-}
-
-code {
-	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
-	font-size: 1em;
-	line-height: 1.357em;
-}
-
-body.wordWrap pre {
-	white-space: pre-wrap;
-}
-
-pre:not(.hljs),
-pre.hljs code > div {
-	padding: 16px;
-	border-radius: 3px;
-	overflow: auto;
-}
-
-pre code {
-	color: var(--vscode-editor-foreground);
-	tab-size: 4;
-}
-
-/** Theming */
-
-.vscode-light pre {
-	background-color: rgba(220, 220, 220, 0.4);
-}
-
-.vscode-dark pre {
-	background-color: rgba(10, 10, 10, 0.4);
-}
-
-.vscode-high-contrast pre {
-	background-color: rgb(0, 0, 0);
-}
-
-.vscode-high-contrast h1 {
-	border-color: rgb(0, 0, 0);
-}
-
-.vscode-light table > thead > tr > th {
-	border-color: rgba(0, 0, 0, 0.69);
-}
-
-.vscode-dark table > thead > tr > th {
-	border-color: rgba(255, 255, 255, 0.69);
-}
-
-.vscode-light h1,
-.vscode-light hr,
-.vscode-light table > tbody > tr + tr > td {
-	border-color: rgba(0, 0, 0, 0.18);
-}
-
-.vscode-dark h1,
-.vscode-dark hr,
-.vscode-dark table > tbody > tr + tr > td {
-	border-color: rgba(255, 255, 255, 0.18);
-}
-
-</style>
-
-<style>
-/* Tomorrow Theme */
-/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
-/* Original theme - https://github.com/chriskempson/tomorrow-theme */
-
-/* Tomorrow Comment */
-.hljs-comment,
-.hljs-quote {
-	color: #8e908c;
-}
-
-/* Tomorrow Red */
-.hljs-variable,
-.hljs-template-variable,
-.hljs-tag,
-.hljs-name,
-.hljs-selector-id,
-.hljs-selector-class,
-.hljs-regexp,
-.hljs-deletion {
-	color: #c82829;
-}
-
-/* Tomorrow Orange */
-.hljs-number,
-.hljs-built_in,
-.hljs-builtin-name,
-.hljs-literal,
-.hljs-type,
-.hljs-params,
-.hljs-meta,
-.hljs-link {
-	color: #f5871f;
-}
-
-/* Tomorrow Yellow */
-.hljs-attribute {
-	color: #eab700;
-}
-
-/* Tomorrow Green */
-.hljs-string,
-.hljs-symbol,
-.hljs-bullet,
-.hljs-addition {
-	color: #718c00;
-}
-
-/* Tomorrow Blue */
-.hljs-title,
-.hljs-section {
-	color: #4271ae;
-}
-
-/* Tomorrow Purple */
-.hljs-keyword,
-.hljs-selector-tag {
-	color: #8959a8;
-}
-
-.hljs {
-	display: block;
-	overflow-x: auto;
-	color: #4d4d4c;
-	padding: 0.5em;
-}
-
-.hljs-emphasis {
-	font-style: italic;
-}
-
-.hljs-strong {
-	font-weight: bold;
+    border-left: 4px solid #999;
+    padding-left: 1rem;
+    page-break-inside: avoid;
 }
 </style>
-
-<style>
-/*
- * Markdown PDF CSS
- */
-
- body {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
-	padding: 0 12px;
-}
-
-pre {
-	background-color: #f8f8f8;
-	border: 1px solid #cccccc;
-	border-radius: 3px;
-	overflow-x: auto;
-	white-space: pre-wrap;
-	overflow-wrap: break-word;
-}
-
-pre:not(.hljs) {
-	padding: 23px;
-	line-height: 19px;
-}
-
-blockquote {
-	background: rgba(127, 127, 127, 0.1);
-	border-color: rgba(0, 122, 204, 0.5);
-}
-
-.emoji {
-	height: 1.4em;
-}
-
-code {
-	font-size: 14px;
-	line-height: 19px;
-}
-
-/* for inline code */
-:not(pre):not(.hljs) > code {
-	color: #C9AE75; /* Change the old color so it seems less like an error */
-	font-size: inherit;
-}
-
-/* Page Break : use <div class="page"/> to insert page break
--------------------------------------------------------- */
-.page {
-	page-break-after: always;
-}
-
-</style>
-
-<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 </head>
 <body>
-  <script>
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
-          ? 'dark'
-          : 'default'
-    });
-  </script>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">MongoDB - The Complete Developer's Guide 2024</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">03 - Schemas and Relations <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <div class="starter-template">
+
+
 <h1 id="03---schemas-and-relations-how-to-structure-documents">03 - Schemas and Relations: How to structure Documents</h1>
 <h2 id="resetting-your-database">Resetting Your Database</h2>
 <p><strong>Important:</strong> We will regularly start with a clean database server (i.e. all data was purged) in this course.</p>
@@ -380,7 +89,7 @@ code {
 <p>One method is to structure documents in a SQL format where every document has exactly the same fields and number of fields.</p>
 <p>Another method is to have the same base fields in each document but then allow some of the documents to have extra fields.</p>
 <p>Here is an example.</p>
-<pre class="hljs"><code><div>    [
+<pre class="prettyprint"><code><div>    [
       {
         _id: ObjectId('<span class="hljs-number">65</span>c4980b26beb523ade13a02'),
         name: 'A book',
@@ -401,7 +110,7 @@ code {
 </div></code></pre>
 <p>This is a more realistic case for MongoDB and you will see this in practice.</p>
 <p>If we wanted to keep a more SQL format we could do this.</p>
-<pre class="hljs"><code><div>    [
+<pre class="prettyprint"><code><div>    [
       {
         _id: ObjectId('<span class="hljs-number">65</span>c4980b26beb523ade13a02'),
         name: 'A book',
@@ -437,10 +146,10 @@ Number</p>
 Embedded document<br>
 Array</p>
 <p>An example.</p>
-<pre class="hljs"><code><div>db.companies.insertOne({name: <span class="hljs-string">"Fresh Apples Inc"</span>, isStartup: <span class="hljs-literal">true</span>, employees: 33, funding: 12345678901234567890, details: {ceo: <span class="hljs-string">"James Robson"</span>}, tags: [{title: <span class="hljs-string">"super"</span>},{title: <span class="hljs-string">"perfect"</span>}], foundingDate: new Date(), insertedAt: new Timestamp()})
+<pre class="prettyprint"><code><div>db.companies.insertOne({name: <span class="hljs-string">"Fresh Apples Inc"</span>, isStartup: <span class="hljs-literal">true</span>, employees: 33, funding: 12345678901234567890, details: {ceo: <span class="hljs-string">"James Robson"</span>}, tags: [{title: <span class="hljs-string">"super"</span>},{title: <span class="hljs-string">"perfect"</span>}], foundingDate: new Date(), insertedAt: new Timestamp()})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>    [
+<pre class="prettyprint"><code><div>    [
       {
         _id: ObjectId('<span class="hljs-number">65</span>c4a6d526beb523ade13a05'),
         name: 'Fresh Apples Inc',
@@ -458,19 +167,19 @@ Array</p>
 <p>Also note that the <code>funding</code> value doesn't contain the number that we entered. This is because we put in a number that was too big.</p>
 <p>If you need to put in really large numbers you might have to enter them as a string.</p>
 <p>Let's drop the companies collection.</p>
-<pre class="hljs"><code><div>    db.companies.drop()
+<pre class="prettyprint"><code><div>    db.companies.drop()
 </div></code></pre>
 <p>If you wanted to delete the database.</p>
-<pre class="hljs"><code><div>    use companyData
+<pre class="prettyprint"><code><div>    use companyData
     db.dropDatabase()
 </div></code></pre>
 <p>Another thing you can do is get statistics from a database</p>
-<pre class="hljs"><code><div>  use family
+<pre class="prettyprint"><code><div>  use family
 
   db.stats()
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  {
+<pre class="prettyprint"><code><div>  {
     db: 'family',
     collections: Long('<span class="hljs-number">1</span>'),
     views: Long('<span class="hljs-number">0</span>'),
@@ -488,18 +197,18 @@ Array</p>
   }
 </div></code></pre>
 <h2 id="numbers-in-more-detail">Numbers in more detail</h2>
-<pre class="hljs"><code><div>  use numberData
+<pre class="prettyprint"><code><div>  use numberData
 
   db.numbers.insertOne({a: 1})
 </div></code></pre>
 <p>A number value in this case is a 64 bit floating number.</p>
 <p>If you want to specify a type you can use the following function.</p>
-<pre class="hljs"><code><div>  db.numbers.insertOne({b: NumberInt(1)})
+<pre class="prettyprint"><code><div>  db.numbers.insertOne({b: NumberInt(1)})
 </div></code></pre>
 <p>In this case the number is a 32 bit int.</p>
 <p><strong>Note:</strong> the reason this happens is because the <code>mongosh</code> shell is based on JavaScript and JavaScript doesn't differentiate between number types. The are all 46 bit floating point numbers.</p>
 <p>You can check the type of a field.</p>
-<pre class="hljs"><code><div>  typeof db.numbers.findOne().b
+<pre class="prettyprint"><code><div>  typeof db.numbers.findOne().b
 </div></code></pre>
 <p>In my case I get an <strong>undefined</strong> result which is a bit disconcerting. If I do the same command on the <code>a</code> document I get the <strong>number</strong> result.</p>
 <h2 id="how-to-derive-your-data-structure-requirements">How to derive your data structure requirements</h2>
@@ -512,50 +221,50 @@ Array</p>
 <h2 id="one-one-relations-embedded">One-one relations (embedded)</h2>
 <p>Where one patient has one aliments summary only, so one patient, one summary.</p>
 <p>An example.</p>
-<pre class="hljs"><code><div>  db.patients.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71, diseaseSummary: <span class="hljs-string">"summary-alan-1"</span>})
+<pre class="prettyprint"><code><div>  db.patients.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71, diseaseSummary: <span class="hljs-string">"summary-alan-1"</span>})
 </div></code></pre>
 <p>Create another collection.</p>
-<pre class="hljs"><code><div>  db.diseaseSummaries.insertOne({_id: <span class="hljs-string">"summary-alan-1"</span>, diseases: [<span class="hljs-string">"bad back"</span>, <span class="hljs-string">"neck ache"</span>, <span class="hljs-string">"ear ache"</span>]})
+<pre class="prettyprint"><code><div>  db.diseaseSummaries.insertOne({_id: <span class="hljs-string">"summary-alan-1"</span>, diseases: [<span class="hljs-string">"bad back"</span>, <span class="hljs-string">"neck ache"</span>, <span class="hljs-string">"ear ache"</span>]})
 </div></code></pre>
 <p>To query.</p>
-<pre class="hljs"><code><div>  db.patients.findOne()
+<pre class="prettyprint"><code><div>  db.patients.findOne()
 </div></code></pre>
 <p>Will find the one and only patient. But I want to find that patients diseases.</p>
 <p>I could do this.</p>
-<pre class="hljs"><code><div>  db.patients.findOne().diseaseSummary
+<pre class="prettyprint"><code><div>  db.patients.findOne().diseaseSummary
 </div></code></pre>
 <p>It returns.</p>
 <blockquote>
 <p>summary-alan-1</p>
 </blockquote>
 <p>This still doesn't give me what I need. I could create a variable.</p>
-<pre class="hljs"><code><div>  <span class="hljs-built_in">let</span> dsid = db.patients.findOne().diseaseSummary
+<pre class="prettyprint"><code><div>  <span class="hljs-built_in">let</span> dsid = db.patients.findOne().diseaseSummary
 </div></code></pre>
 <p>Now if I type</p>
-<pre class="hljs"><code><div>  dsid
+<pre class="prettyprint"><code><div>  dsid
 </div></code></pre>
 <p>It will return.</p>
 <blockquote>
 <p>summary-alan-1</p>
 </blockquote>
 <p>I can use this variable.</p>
-<pre class="hljs"><code><div>  db.diseaseSummaries.findOne({_id: dsid})
+<pre class="prettyprint"><code><div>  db.diseaseSummaries.findOne({_id: dsid})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  {
+<pre class="prettyprint"><code><div>  {
     _id: 'summary-alan<span class="hljs-number">-1</span>',
     diseases: [ 'bad back', 'neck ache', 'ear ache' ]
   }
 </div></code></pre>
 <p>The problem with this is it takes two steps.</p>
 <p>Let's delete this patient.</p>
-<pre class="hljs"><code><div>  db.patients.deleteMany({})
+<pre class="prettyprint"><code><div>  db.patients.deleteMany({})
 </div></code></pre>
 <p>Change the patient record to embed the dieases.</p>
-<pre class="hljs"><code><div>  db.patients.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71, diseaseSummary: {diseases: [<span class="hljs-string">"bad back"</span>, <span class="hljs-string">"neck ache"</span>, <span class="hljs-string">"ear ache"</span>]}})
+<pre class="prettyprint"><code><div>  db.patients.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71, diseaseSummary: {diseases: [<span class="hljs-string">"bad back"</span>, <span class="hljs-string">"neck ache"</span>, <span class="hljs-string">"ear ache"</span>]}})
 </div></code></pre>
 <p>You can now do a simple query to get the results.</p>
-<pre class="hljs"><code><div>  {
+<pre class="prettyprint"><code><div>  {
     _id: ObjectId('<span class="hljs-number">65</span>c57d38aeac807bbb5b8a24'),
     name: 'Alan Robson',
     age: <span class="hljs-number">71</span>,
@@ -568,38 +277,38 @@ Array</p>
 <h2 id="many-to-many-relationships">Many-to-Many relationships</h2>
 <p>You could have many customers who buy many products.</p>
 <p>Add a product.</p>
-<pre class="hljs"><code><div>  db.products.insertOne({title: <span class="hljs-string">"A book"</span>, price: 12.99})
+<pre class="prettyprint"><code><div>  db.products.insertOne({title: <span class="hljs-string">"A book"</span>, price: 12.99})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  {
+<pre class="prettyprint"><code><div>  {
     acknowledged: <span class="hljs-literal">true</span>,
     insertedId: ObjectId('<span class="hljs-number">65</span>c599fd29c972fe5ef97a09')
   }
 </div></code></pre>
 <p>Add a customer.</p>
-<pre class="hljs"><code><div>  db.customers.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71})
+<pre class="prettyprint"><code><div>  db.customers.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71})
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  {
+<pre class="prettyprint"><code><div>  {
     acknowledged: <span class="hljs-literal">true</span>,
     insertedId: ObjectId('<span class="hljs-number">65</span>c59a4029c972fe5ef97a0a')
   }
 </div></code></pre>
 <p>Add an order.</p>
-<pre class="hljs"><code><div>db.orders.insertOne({customer: ObjectId(<span class="hljs-string">'65c59a4029c972fe5ef97a0a'</span>), product: ObjectId(<span class="hljs-string">'65c599fd29c972fe5ef97a09'</span>)
+<pre class="prettyprint"><code><div>db.orders.insertOne({customer: ObjectId(<span class="hljs-string">'65c59a4029c972fe5ef97a0a'</span>), product: ObjectId(<span class="hljs-string">'65c599fd29c972fe5ef97a09'</span>)
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  {
+<pre class="prettyprint"><code><div>  {
     acknowledged: <span class="hljs-literal">true</span>,
     insertedId: ObjectId('<span class="hljs-number">65</span>c59a9e29c972fe5ef97a0b')
   }
 </div></code></pre>
 <p>This is the SQL way of doing things.</p>
 <p>We will drop the orders collection.</p>
-<pre class="hljs"><code><div>  db.orders.drop()
+<pre class="prettyprint"><code><div>  db.orders.drop()
 </div></code></pre>
 <p>Now we will modify the customers collection to add an order.</p>
-<pre class="hljs"><code><div>db.customers.updateOne({}, {<span class="hljs-variable">$set</span>: {orders: [{productid: ObjectId(<span class="hljs-string">'65c599fd29c972fe5ef97a09'</span>), quantity: 2}]}})
+<pre class="prettyprint"><code><div>db.customers.updateOne({}, {<span class="hljs-variable">$set</span>: {orders: [{productid: ObjectId(<span class="hljs-string">'65c599fd29c972fe5ef97a09'</span>), quantity: 2}]}})
 </div></code></pre>
 <h2 id="summary">Summary</h2>
 <p><img src="assets/images/relations-options.jpg" alt="relations-options" title="relations-options"></p>
@@ -608,28 +317,28 @@ Array</p>
 <p>You have an <code>aggregate</code> function that allows you to merge data together.</p>
 <p>Build the collections.</p>
 <h3 id="authors">Authors</h3>
-<pre class="hljs"><code><div>  db.authors.insertOne({name: <span class="hljs-string">"Alan Robson"</span>})
+<pre class="prettyprint"><code><div>  db.authors.insertOne({name: <span class="hljs-string">"Alan Robson"</span>})
 </div></code></pre>
 <p>returns.</p>
-<pre class="hljs"><code><div>  {
+<pre class="prettyprint"><code><div>  {
     acknowledged: <span class="hljs-literal">true</span>,
     insertedId: ObjectId('<span class="hljs-number">65</span>c5ae6929c972fe5ef97a0c')
   }
 </div></code></pre>
 <p>Next.</p>
-<pre class="hljs"><code><div>  db.authors.insertOne({name: <span class="hljs-string">"James Robson"</span>})
+<pre class="prettyprint"><code><div>  db.authors.insertOne({name: <span class="hljs-string">"James Robson"</span>})
 </div></code></pre>
 <p>returns.</p>
-<pre class="hljs"><code><div>  {
+<pre class="prettyprint"><code><div>  {
     acknowledged: <span class="hljs-literal">true</span>,
     insertedId: ObjectId('<span class="hljs-number">65</span>c5ae7329c972fe5ef97a0d')
   }
 </div></code></pre>
 <h3 id="books">Books</h3>
-<pre class="hljs"><code><div>db.books.insertOne({name: <span class="hljs-string">"MongoDB and Python"</span>, authors: [ObjectId(<span class="hljs-string">'65c5ae6929c972fe5ef97a0c'</span>), ObjectId(<span class="hljs-string">'65c5ae7329c972fe5ef97a0d'</span>)]})
+<pre class="prettyprint"><code><div>db.books.insertOne({name: <span class="hljs-string">"MongoDB and Python"</span>, authors: [ObjectId(<span class="hljs-string">'65c5ae6929c972fe5ef97a0c'</span>), ObjectId(<span class="hljs-string">'65c5ae7329c972fe5ef97a0d'</span>)]})
 </div></code></pre>
 <p>Now to use <code>$lookup</code> and merge on relationships.</p>
-<pre class="hljs"><code><div>db.books.aggregate([{<span class="hljs-variable">$lookup</span>: {from: <span class="hljs-string">"authors"</span>, localField: <span class="hljs-string">"authors"</span>, foreignField: <span class="hljs-string">"_id"</span>, as: <span class="hljs-string">"Authors"</span>}}])
+<pre class="prettyprint"><code><div>db.books.aggregate([{<span class="hljs-variable">$lookup</span>: {from: <span class="hljs-string">"authors"</span>, localField: <span class="hljs-string">"authors"</span>, foreignField: <span class="hljs-string">"_id"</span>, as: <span class="hljs-string">"Authors"</span>}}])
 </div></code></pre>
 <p>Build the command.</p>
 <p>With <code>db.books.aggregate([])</code>, we use an array because we can define multiple steps on aggregating our data.</p>
@@ -651,7 +360,7 @@ Array</p>
 </li>
 </ol>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  [
+<pre class="prettyprint"><code><div>  [
     {
       _id: ObjectId('<span class="hljs-number">65</span>c5aef129c972fe5ef97a0e'),
       name: 'MongoDB and Python',
@@ -701,13 +410,13 @@ Array</p>
 <li>comments []</li>
 </ul>
 <h3 id="create-the-collections">Create the collections</h3>
-<pre class="hljs"><code><div>  use blog
+<pre class="prettyprint"><code><div>  use blog
 </div></code></pre>
 <h3 id="create-users">Create users</h3>
-<pre class="hljs"><code><div>  db.users.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71, email: <span class="hljs-string">"alan@alan.com"</span>})
+<pre class="prettyprint"><code><div>  db.users.insertOne({name: <span class="hljs-string">"Alan Robson"</span>, age: 71, email: <span class="hljs-string">"alan@alan.com"</span>})
 </div></code></pre>
 <p>Users.</p>
-<pre class="hljs"><code><div>  [
+<pre class="prettyprint"><code><div>  [
     {
       _id: ObjectId('<span class="hljs-number">65</span>c6b9ed738e85e2bcffbbd6'),
       name: 'Alan Robson',
@@ -729,13 +438,13 @@ Array</p>
   ]
 </div></code></pre>
 <h3 id="create-posts">Create posts</h3>
-<pre class="hljs"><code><div>db.posts.insertOne({title: <span class="hljs-string">"My first post"</span>, text: <span class="hljs-string">"This is the text for my first post..."</span>, tags: [<span class="hljs-string">"blog"</span>, <span class="hljs-string">"personal"</span>, <span class="hljs-string">"boring"</span>], creator: ObjectId(<span class="hljs-string">'65c6b9ed738e85e2bcffbbd6'</span>), comments: [{text: <span class="hljs-string">"blah, blah, blah"</span>, author: ObjectId(<span class="hljs-string">'65c6ba01738e85e2bcffbbd7'</span>)},{text: <span class="hljs-string">"wow, not interesting:"</span>, author: ObjectId(<span class="hljs-string">'65c6ba25738e85e2bcffbbd8'</span>)}]})
+<pre class="prettyprint"><code><div>db.posts.insertOne({title: <span class="hljs-string">"My first post"</span>, text: <span class="hljs-string">"This is the text for my first post..."</span>, tags: [<span class="hljs-string">"blog"</span>, <span class="hljs-string">"personal"</span>, <span class="hljs-string">"boring"</span>], creator: ObjectId(<span class="hljs-string">'65c6b9ed738e85e2bcffbbd6'</span>), comments: [{text: <span class="hljs-string">"blah, blah, blah"</span>, author: ObjectId(<span class="hljs-string">'65c6ba01738e85e2bcffbbd7'</span>)},{text: <span class="hljs-string">"wow, not interesting:"</span>, author: ObjectId(<span class="hljs-string">'65c6ba25738e85e2bcffbbd8'</span>)}]})
 </div></code></pre>
 <h4 id="use-aggregation-to-get-data-from-multiple-tables">Use aggregation to get data from multiple tables</h4>
-<pre class="hljs"><code><div>db.users.aggregate([{<span class="hljs-variable">$lookup</span>: {from: <span class="hljs-string">"posts"</span>, localField: <span class="hljs-string">"_id"</span>, foreignField: <span class="hljs-string">"creator"</span>, as: <span class="hljs-string">"Post"</span>}}])
+<pre class="prettyprint"><code><div>db.users.aggregate([{<span class="hljs-variable">$lookup</span>: {from: <span class="hljs-string">"posts"</span>, localField: <span class="hljs-string">"_id"</span>, foreignField: <span class="hljs-string">"creator"</span>, as: <span class="hljs-string">"Post"</span>}}])
 </div></code></pre>
 <p>Returns.</p>
-<pre class="hljs"><code><div>  [
+<pre class="prettyprint"><code><div>  [
     {
       _id: ObjectId('<span class="hljs-number">65</span>c6b9ed738e85e2bcffbbd6'),
       name: 'Alan Robson',
@@ -790,7 +499,7 @@ Array</p>
 <li>properties</li>
 </ul>
 <p>Each property has a <code>type</code> and <code>description</code>.</p>
-<pre class="hljs"><code><div>  db.createCollection(<span class="hljs-string">'posts'</span>, {
+<pre class="prettyprint"><code><div>  db.createCollection(<span class="hljs-string">'posts'</span>, {
     validator: {
       <span class="hljs-variable">$jsonSchema</span>: {
         bsonType: <span class="hljs-string">'object'</span>,
@@ -836,7 +545,7 @@ Array</p>
 <p>In the previous example we didn't add a <code>validationAction</code> so it will automatically stop once an error is hit and won't add or update that command.</p>
 <p>We have the option to change the severity.</p>
 <p>As we have added validation to our collection we now have to update the schema for the collection.</p>
-<pre class="hljs"><code><div>  db.runCommand({
+<pre class="prettyprint"><code><div>  db.runCommand({
     collMod: <span class="hljs-string">'posts'</span>,
     validator: {
       <span class="hljs-variable">$jsonSchema</span>: {
@@ -887,5 +596,20 @@ Array</p>
 </ul>
 <p>If you don't specify a <code>validationAction</code> it will default to <strong>error</strong>.</p>
 
+
+
+</div><!-- starter-template -->
+</div><!-- /.container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"/>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
 </body>
 </html>
