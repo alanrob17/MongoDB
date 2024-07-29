@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Mongo Shell</title>
+<link href="assets/css/bootstrap.css" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="assets/css/starter-template.css" rel="stylesheet">
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css&amp;skin=sunburst"></script>
+<style type="text/css">
+h2 {
+	margin-top: 60px;
+}
+
+h4, h3 {
+	padding-top: 40px!;		
+}
+
+p {
+	font-size: 1.2em;
+}
+h4 {
+	font-size: 1.4em;
+}
+
+img, pre.prettyprint {
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+    color:#007bff;
+
+}
+blockquote {
+    border-left: 4px solid #999;
+    padding-left: 1rem;
+    page-break-inside: avoid;
+}
+</style>
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">MongoDB</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Mongo Shell <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <div class="starter-template">
+
+
+<h2 id="mongodb">MongoDB</h2>
+<p><a href="https://mongodb.github.io/node-mongodb-native/" title="Documentation for MongoDB Node.js driver">Documentation for MongoDB Node.js driver</a></p>
+<p><a href="https://docs.mongodb.com/manual/" title="MongoDB manual">MongoDB manual</a>.</p>
+<h3 id="mongodb-executables">MongoDB executables</h3>
+<p>In the <strong>bin</strong> folder.</p>
+<p><strong>mongod.exe</strong> Is the server and should be running from startup as a service.</p>
+<p>If you need to restart the server.</p>
+<pre class="prettyprint">    mongod --config mongod.cfg
+</pre>
+<p><code>mongod.cfg</code> has the server setup configuration including where install our databases.</p>
+<p><strong>mongo.exe</strong> Is how we connect to MongoDB it is our Mongo shell.</p>
+<h3 id="mongo-shell">Mongo shell</h3>
+<p>Mongo has a command shell and it is useful to have a quick look at your databases. I have added some of the main commands down below.</p>
+<p>To see the databases.</p>
+<pre class="prettyprint">    show dbs;
+</pre>
+<blockquote>
+<p>admin                  0.000GB<br>
+classes                0.000GB<br>
+config                 0.000GB<br>
+devcamper              0.000GB<br>
+files                  0.015GB<br>
+local                  0.000GB<br>
+meanhotel              0.000GB<br>
+record-db              0.004GB<br>
+task-manager           0.000GB<br>
+task-manager-api       0.000GB<br>
+task-manager-api-test  0.000GB<br>
+test                   0.000GB<br>
+wikiDB                 0.000GB</p>
+</blockquote>
+<h3 id="importing-sample-data">Importing sample data</h3>
+<p>Copy the json sample data into your folder.</p>
+<p><code>exit</code> to exit out of mongo shell. Run the commands.</p>
+<pre class="prettyprint">    mongoimport --db cooker examples.json
+    mongoimport --db cooker recipes.json
+    mongoimport --db cooker users.json
+</pre>
+<p>When you run <code>show dbs;</code> this time you will see your <em>cooker</em> database.</p>
+<h3 id="documents">Documents</h3>
+<p>Are field-value pairs stored in JSON like BSON (binary JSON for reducing size).</p>
+<p>To change to a database.</p>
+<pre class="prettyprint">    use cooker;
+</pre>
+<p>To create a document in mongo.</p>
+<pre class="prettyprint">    doc = { &quot;title&quot;:&quot;Tacos&quot;, &quot;desc&quot;:&quot;Yummy tacos&quot;, &quot;cook_time&quot;:20 };
+</pre>
+<p>We need somewhere to store the document.</p>
+<pre class="prettyprint">    db.tacos.insertOne(doc);
+</pre>
+<p>This will insert one document into the <strong>tacos</strong>  collection. If the <strong>tacos</strong> collection doesn't exist MongoDB will create it.</p>
+<p>To search for the documents in a collection.</p>
+<pre class="prettyprint">    db.tacos.find();
+</pre>
+<p>will show you.</p>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5f4af4016779fb2cba44625d&quot;), &quot;title&quot; : &quot;Tacos&quot;, &quot;desc&quot; : &quot;Yummy tacos&quot;, &quot;cook_time&quot; : 20 }</p>
+</blockquote>
+<p>Notice that there is a new field, <code>_id</code>. The <code>_id</code> field is required in every document in MongoDB. every <code>_id</code> is unique in MongoDB and contains an encoded datetime field set to when the document was created which can be used for sorting.</p>
+<p>We can also format the previous command.</p>
+<pre class="prettyprint">     db.tacos.find().pretty();
+</pre>
+<blockquote>
+<p>{<br>
+&quot;_id&quot; : ObjectId(&quot;5f4af4016779fb2cba44625d&quot;),<br>
+&quot;title&quot; : &quot;Tacos&quot;,<br>
+&quot;desc&quot; : &quot;Yummy tacos&quot;,<br>
+&quot;cook_time&quot; : 20<br>
+}</p>
+</blockquote>
+<p>Create another document.</p>
+<pre class="prettyprint">    doc2 = { &quot;title&quot;:&quot;Dos Tacos&quot;, &quot;desc&quot;:&quot;Even more yummy tacos&quot;, &quot;cook_time&quot;:20 };
+</pre>
+<p>Insert it.</p>
+<pre class="prettyprint">    db.tacos.insertOne(doc2);
+</pre>
+<p>Run the <code>find()</code> command again.</p>
+<blockquote>
+<p>{<br>
+&quot;_id&quot; : ObjectId(&quot;5f4af4016779fb2cba44625d&quot;),<br>
+&quot;title&quot; : &quot;Tacos&quot;,<br>
+&quot;desc&quot; : &quot;Yummy tacos&quot;,<br>
+&quot;cook_time&quot; : 20<br>
+}<br>
+{<br>
+&quot;_id&quot; : ObjectId(&quot;5f4af82fcd9cfb1ae53706be&quot;),<br>
+&quot;title&quot; : &quot;Dos Tacos&quot;,<br>
+&quot;desc&quot; : &quot;Even more yummy tacos&quot;,<br>
+&quot;cook_time&quot; : 20<br>
+}</p>
+</blockquote>
+<p>Now we can refine our search.</p>
+<pre class="prettyprint">	db.tacos.find({title : 'Tacos'}).pretty();
+</pre>
+<blockquote>
+<p>{<br>
+&quot;_id&quot; : ObjectId(&quot;5f4af4016779fb2cba44625d&quot;),<br>
+&quot;title&quot; : &quot;Tacos&quot;,<br>
+&quot;desc&quot; : &quot;Yummy tacos&quot;,<br>
+&quot;cook_time&quot; : 20<br>
+}</p>
+</blockquote>
+<h3 id="what-can-we-store-in-a-mongo-document">What can we store in a Mongo document?</h3>
+<p>We can store a number of different types in MongoDB. The following code stores an array for the directions.</p>
+<pre class="prettyprint">    {
+      &quot;title&quot;: &quot;Apple Pie&quot;,
+      &quot;directions&quot;: [
+        &quot;Roll the pie crust&quot;,
+        &quot;Make the filling&quot;,
+        &quot;Bake&quot;
+      ]
+    }
+</pre>
+<p><code>directions</code> is literally a JavaScript style array.</p>
+<p>Look at the <em>ingredients.json</em> file that expands on the previous example.</p>
+<pre class="prettyprint">    {
+      &quot;title&quot;: &quot;Apple Pie&quot;,
+      &quot;directions&quot;: [
+        &quot;Roll the pie crust&quot;,
+        &quot;Make the filling&quot;,
+        &quot;Bake&quot;
+      ],
+      &quot;ingredients&quot;: [
+         {
+           &quot;amount&quot;: {
+             &quot;quantity&quot;: 2,
+               &quot;unit&quot;: null
+             },
+            &quot;name&quot;: &quot;pie crusts&quot;
+        }, {
+           &quot;amount&quot;: {
+             &quot;quantity&quot;: 1,
+               &quot;unit&quot;: &quot;tbsp&quot;
+            },
+            &quot;name&quot;: &quot;cinnamon&quot;
+        }
+      ]
+    }
+</pre>
+<p>This time ingredients is an array of objects. It also has objects within objects.</p>
+<p>We can get more complex than this. The following is the first recipe in recipes.json.</p>
+<pre class="prettyprint">    {
+    	&quot;_id&quot;: {
+    		&quot;$oid&quot;: &quot;5e6fd805fa98021236426a24&quot;
+    	},
+    	&quot;title&quot;: &quot;Chicken Soft Tacos&quot;,
+    	&quot;calories_per_serving&quot;: 205,
+    	&quot;cook_time&quot;: 19,
+    	&quot;desc&quot;: &quot;Mexican soft tacos&quot;,
+    	&quot;directions&quot;: [
+    		&quot;Put seasoning on chicken breasts&quot;,
+    		&quot;Grill until done&quot;,
+    		&quot;Chop chicken into peices&quot;,
+    		&quot;Put in totillas&quot;
+    	],
+    	&quot;ingredients&quot;: [
+    		{
+    			&quot;name&quot;: &quot;chicken breast&quot;,
+    			&quot;quantity&quot;: {
+    				&quot;amount&quot;: 1,
+    				&quot;unit&quot;: &quot;lbs&quot;
+    			}
+    		},
+    		{
+    			&quot;name&quot;: &quot;taco seasoning&quot;,
+    			&quot;quantity&quot;: {
+    				&quot;amount&quot;: 2,
+    				&quot;unit&quot;: &quot;oz&quot;
+    			}
+    		},
+    		{
+    			&quot;name&quot;: &quot;small flour totillas&quot;,
+    			&quot;quantity&quot;: {
+    				&quot;amount&quot;: 12,
+    				&quot;unit&quot;: &quot;oz&quot;
+    			}
+    		}
+    	],
+    	&quot;likes&quot;: [
+    		261,
+    		1,
+    		415
+    	],
+    	&quot;likes_count&quot;: 3,
+    	&quot;prep_time&quot;: 10,
+    	&quot;rating&quot;: [
+    		4,
+    		4,
+    		4,
+    		4,
+    		2,
+    		5,
+    		3
+    	],
+    	&quot;rating_avg&quot;: 3.71,
+    	&quot;servings&quot;: 5,
+    	&quot;tags&quot;: [
+    		&quot;mexican&quot;,
+    		&quot;quick&quot;,
+    		&quot;easy&quot;,
+    		&quot;chicken&quot;
+    	],
+    	&quot;type&quot;: &quot;Dinner&quot;
+    }
+</pre>
+<h3 id="databases-and-collections">Databases and Collections</h3>
+<p>Creating documents with nested data can quickly become unmanageable. This can slow down processing.</p>
+<p>This is where <strong>collections</strong> come in. In collections we can keep related documents together making it easier to query the data. This leads to better performance.</p>
+<p>For example we can search for all documents in a collection and only show particular fields.</p>
+<pre class="prettyprint">    db.recipes.find({}, {&quot;title&quot;: 1});
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5e6fd805fa98021236426a24&quot;), &quot;title&quot; : &quot;Chicken Soft Tacos&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e877cba20a4f574c0aa56da&quot;), &quot;title&quot; : &quot;Pancakes&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e87856d07beb474c074c5ca&quot;), &quot;title&quot; : &quot;Brown Sugar Meatloaf&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e878f5220a4f574c0aa56db&quot;), &quot;title&quot; : &quot;Maple Smoked Salmon&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5edf1d313260aab97ea0d589&quot;), &quot;title&quot; : &quot;Zucchini Brownies&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5edf1cd43260aab97ea0d588&quot;), &quot;title&quot; : &quot;Apple Pie&quot; }</p>
+</blockquote>
+<p><code>{}</code> tells us to find all documents. <code>{&quot;title&quot;: 1}</code> means only show the title field and the <code>1</code> means include the field in the output.</p>
+<p>To show the current database.</p>
+<pre class="prettyprint">    db.getName();
+</pre>
+<blockquote>
+<p>cooker</p>
+</blockquote>
+<p>To show all collections in a particular database.</p>
+<pre class="prettyprint">    show collections;
+</pre>
+<p>In our <em>cooker</em> database we have the following collections.</p>
+<blockquote>
+<p>examples<br>
+recipes<br>
+tacos</p>
+</blockquote>
+<p>To create a new empty collection.</p>
+<pre class="prettyprint">    db.my_new_stuff.insertOne({});
+</pre>
+<p><strong>Note:</strong> I can't use a dash <strong>-</strong> in a collection name.</p>
+<p>You can also create sub documents.</p>
+<pre class="prettyprint">    db.my_new.stuff.insertOne({});
+</pre>
+<p><code>show collections</code> will return</p>
+<blockquote>
+<p>examples<br>
+my_new.stuff<br>
+my_new_stuff<br>
+recipes<br>
+tacos</p>
+</blockquote>
+<p>Sub documents don't store your data any differently but it can be helpful for query purposes.</p>
+<p>You can also create <strong>capped</strong> collections. This is where we tell MongoDB that we only want to create collections of a particular size.</p>
+<p>In these collections when we insert a new document and the collection is full it will automatically remove the oldest document and then create the new one.</p>
+<h3 id="search-record-db">Search Record DB</h3>
+<pre class="prettyprint">    use record-db
+</pre>
+<p>Show artists.</p>
+<pre class="prettyprint">    db.artists.find({}, {&quot;name&quot;: 1});
+</pre>
+<p>Returns</p>
+<blockquote>
+<p>{ &quot;_id&quot; : &quot;5f3defa4163278d1ac061c64&quot;, &quot;name&quot; : &quot;Mick Abrahams&quot; }<br>
+{ &quot;_id&quot; : &quot;5f3defa4163278d1ac061c65&quot;, &quot;name&quot; : &quot;Geoff Achison&quot; }<br>
+{ &quot;_id&quot; : &quot;5f3defa4163278d1ac061c66&quot;, &quot;name&quot; : &quot;William Ackerman&quot; }<br>
+{ &quot;_id&quot; : &quot;5f3defa4163278d1ac061c67&quot;, &quot;name&quot; : &quot;Ryan Adams&quot; }<br>
+{ &quot;_id&quot; : &quot;5f3defa4163278d1ac061c68&quot;, &quot;name&quot; : &quot;Duane Allman&quot; }<br>
+{ &quot;_id&quot; : &quot;5f3defa4163278d1ac061c69&quot;, &quot;name&quot; : &quot;Greg Allman&quot; }<br>
+{ &quot;_id&quot; : &quot;5f3defa4163278d1ac061c6a&quot;, &quot;name&quot; : &quot;The Allman Brothers Band&quot; }<br>
+...</p>
+</blockquote>
+<p>To search for an artist's records.</p>
+<pre class="prettyprint">    db.records.find({&quot;artist&quot;: ObjectId(&quot;5f3defa4163278d1ac061c9a&quot;)}, {&quot;name&quot;: 1});
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c96&quot;), &quot;name&quot; : &quot;Michael Brecker&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c97&quot;), &quot;name&quot; : &quot;Don't Try This At Home&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c98&quot;), &quot;name&quot; : &quot;The Cost Of Living&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c99&quot;), &quot;name&quot; : &quot;Now You See It...(Now You Don't)&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9a&quot;), &quot;name&quot; : &quot;Tales From The Hudson&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9b&quot;), &quot;name&quot; : &quot;Two Blocks From The Edge&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9c&quot;), &quot;name&quot; : &quot;Time Is Of The Essence&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9d&quot;), &quot;name&quot; : &quot;Nearness Of You&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9e&quot;), &quot;name&quot; : &quot;Directions In Music&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9f&quot;), &quot;name&quot; : &quot;Pligrimage&quot; }</p>
+</blockquote>
+<p>Note that in the search by <code>_id</code> I have to wrap <code>_id</code> in the <code>ObjectId()</code> to be able to search correctly. It won't search on a string value.</p>
+<h3 id="sort-limit-and-skip">Sort, limit and skip</h3>
+<p>When you do a query on a database, MongoDB sends back a <code>cursor</code>. The <code>cursor</code> doesn't run straight away. It waits for the data to be requested. This happens automatically unless you manually iterate on the cursor. It is important to be aware of this even though you don't see it in operation that often.</p>
+<p>What this allows you to do is run other commands after the <code>find()</code> command and this is called <strong>chaining</strong>.</p>
+<h4 id="count">count()</h4>
+<pre class="prettyprint">	db.records.find({&quot;artist&quot;: ObjectId(&quot;5f3defa4163278d1ac061c9a&quot;)}, {&quot;name&quot;: 1}).count();
+</pre>
+<blockquote>
+<p>10</p>
+</blockquote>
+<h4 id="limit">limit()</h4>
+<p>Limit the number of documents sent back.</p>
+<pre class="prettyprint">	db.records.find({&quot;artist&quot;: ObjectId(&quot;5f3defa4163278d1ac061c9a&quot;)}, {&quot;name&quot;: 1}).limit(5);
+</pre>
+<h4 id="sort">sort()</h4>
+<pre class="prettyprint">	db.records.find({&quot;artist&quot;: ObjectId(&quot;5f3defa4163278d1ac061c9a&quot;)}, {&quot;name&quot;: 1}).sort({ &quot;recorded&quot;: 1 });
+</pre>
+<p>Will sort on the <em>recorded</em> field in an ascending direction.</p>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c96&quot;), &quot;name&quot; : &quot;Michael Brecker&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c97&quot;), &quot;name&quot; : &quot;Don't Try This At Home&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c98&quot;), &quot;name&quot; : &quot;The Cost Of Living&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c99&quot;), &quot;name&quot; : &quot;Now You See It...(Now You Don't)&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9a&quot;), &quot;name&quot; : &quot;Tales From The Hudson&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9b&quot;), &quot;name&quot; : &quot;Two Blocks From The Edge&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9c&quot;), &quot;name&quot; : &quot;Time Is Of The Essence&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9d&quot;), &quot;name&quot; : &quot;Nearness Of You&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9e&quot;), &quot;name&quot; : &quot;Directions In Music&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9f&quot;), &quot;name&quot; : &quot;Pilgrimage&quot; }</p>
+</blockquote>
+<p>To sort descending.</p>
+<pre class="prettyprint">	db.records.find({&quot;artist&quot;: ObjectId(&quot;5f3defa4163278d1ac061c9a&quot;)}, {&quot;name&quot;: 1}).sort({ &quot;recorded&quot;: -1 });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9f&quot;), &quot;name&quot; : &quot;Pilgrimage&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9e&quot;), &quot;name&quot; : &quot;Directions In Music&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9d&quot;), &quot;name&quot; : &quot;Nearness Of You&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9c&quot;), &quot;name&quot; : &quot;Time Is Of The Essence&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9b&quot;), &quot;name&quot; : &quot;Two Blocks From The Edge&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c9a&quot;), &quot;name&quot; : &quot;Tales From The Hudson&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c99&quot;), &quot;name&quot; : &quot;Now You See It...(Now You Don't)&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c98&quot;), &quot;name&quot; : &quot;The Cost Of Living&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c97&quot;), &quot;name&quot; : &quot;Don't Try This At Home&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c96&quot;), &quot;name&quot; : &quot;Michael Brecker&quot; }</p>
+</blockquote>
+<p>Show two fields.</p>
+<pre class="prettyprint">	db.records.find({&quot;artist&quot;: ObjectId(&quot;5f3defa4163278d1ac061c9a&quot;)}, { &quot;name&quot;: 1, &quot;recorded&quot;: 1}).sort({ &quot;recorded&quot;: -1 });
+</pre>
+<h3 id="working-with-operators-and-arrays">Working with operators and arrays</h3>
+<h4 id="gt-lt-gte-or-lte">$gt, $lt, $gte or $lte</h4>
+<p>Find the number of records recorded greater than or equal to 2000.</p>
+<pre class="prettyprint">	db.records.find({ &quot;recorded&quot;: { $gte: 2000 }}, { &quot;title&quot;: 1 }).count();
+</pre>
+<blockquote>
+<p>358</p>
+</blockquote>
+<h4 id="or">$or</h4>
+<pre class="prettyprint">	db.records.find({ $or: [{ &quot;recorded&quot;: 1974}, {&quot;recorded&quot;: 1975 }]}, { &quot;name&quot;: 1, &quot;recorded&quot;: 1 });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c16&quot;), &quot;name&quot; : &quot;Stacked Deck&quot;, &quot;recorded&quot; : 1975 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c24&quot;), &quot;name&quot; : &quot;Big Red Rock&quot;, &quot;recorded&quot; : 1974 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c25&quot;), &quot;name&quot; : &quot;Big Red Rock [Remastered]&quot;, &quot;recorded&quot; : 1974 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c37&quot;), &quot;name&quot; : &quot;Northern Lights, Southern Cross&quot;, &quot;recorded&quot; : 1975 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c51&quot;), &quot;name&quot; : &quot;Blow By Blow&quot;, &quot;recorded&quot; : 1975 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c52&quot;), &quot;name&quot; : &quot;Blow By Blow&quot;, &quot;recorded&quot; : 1975 }<br>
+...</p>
+</blockquote>
+<p>Add a <code>sort()</code> to that query.</p>
+<pre class="prettyprint">	db.records.find({ $or: [{ &quot;recorded&quot;: 1974}, {&quot;recorded&quot;: 1975 }]}, { &quot;name&quot;: 1, &quot;recorded&quot;: 1 }).sort({ &quot;recorded&quot;: 1 });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c24&quot;), &quot;name&quot; : &quot;Big Red Rock&quot;, &quot;recorded&quot; : 1974 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c25&quot;), &quot;name&quot; : &quot;Big Red Rock [Remastered]&quot;, &quot;recorded&quot; : 1974 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c6a&quot;), &quot;name&quot; : &quot;Fields Of November&quot;, &quot;recorded&quot; : 1974 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7c95&quot;), &quot;name&quot; : &quot;Sor &amp; Giulani&quot;, &quot;recorded&quot; : 1974 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7ca0&quot;), &quot;name&quot; : &quot;Jim Brewer&quot;, &quot;recorded&quot; : 1974 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7ca9&quot;), &quot;name&quot; : &quot;Late For The Sky&quot;, &quot;recorded&quot; : 1974 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5f49c30db8661243744d7caa&quot;), &quot;name&quot; : &quot;Late For The Sky&quot;, &quot;recorded&quot; : 1974 }<br>
+...</p>
+</blockquote>
+<h3 id="filtering-on-tags-in-the-recipe-collection">Filtering on tags in the recipe collection</h3>
+<p>In the <em>recipe</em> collection find recipes with the tag <strong>easy</strong>.</p>
+<pre class="prettyprint">	db.recipes.find({ &quot;tags&quot;: &quot;easy&quot; }, { &quot;title&quot;: 1, &quot;tags&quot;: 1 });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5e6fd805fa98021236426a24&quot;), &quot;title&quot; : &quot;Chicken Soft Tacos&quot;, &quot;tags&quot; : [ &quot;mexican&quot;, &quot;quick&quot;, &gt; &quot;easy&quot;, &quot;chicken&quot; ] }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e87856d07beb474c074c5ca&quot;), &quot;title&quot; : &quot;Brown Sugar Meatloaf&quot;, &quot;tags&quot; : [ &quot;groud beef&quot;, &gt; &quot;family meal&quot;, &quot;easy&quot; ] }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot;, &quot;tags&quot; : [ &quot;mexican&quot;, &quot;quick&quot;, &quot;easy&quot;, &gt; &quot;ground beef&quot; ] }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5edf1d313260aab97ea0d589&quot;), &quot;title&quot; : &quot;Zucchini Brownies&quot;, &quot;tags&quot; : [ &quot;sweets&quot;, &quot;easy&quot; ] }</p>
+</blockquote>
+<p>What if we wanted to search for tags with <em>quick</em> <strong>and</strong> <em>easy</em>?</p>
+<pre class="prettyprint">	db.recipes.find({ &quot;tags&quot;: { $all: [&quot;easy&quot;, &quot;quick&quot;] }}, { &quot;title&quot;: 1, &quot;tags&quot;: 1 });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5e6fd805fa98021236426a24&quot;), &quot;title&quot; : &quot;Chicken Soft Tacos&quot;, &quot;tags&quot; : [ &quot;mexican&quot;, &quot;quick&quot;, &quot;easy&quot;, &quot;chicken&quot; ] }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot;, &quot;tags&quot; : [ &quot;mexican&quot;, &quot;quick&quot;, &quot;easy&quot;, &quot;ground beef&quot; ] }</p>
+</blockquote>
+<p>Searching for tags with <em>quick</em> <strong>or</strong> <em>easy</em>?</p>
+<pre class="prettyprint">	db.recipes.find({ &quot;tags&quot;: { $in: [&quot;easy&quot;, &quot;quick&quot;] }}, { &quot;title&quot;: 1, &quot;tags&quot;: 1 });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5e6fd805fa98021236426a24&quot;), &quot;title&quot; : &quot;Chicken Soft Tacos&quot;, &quot;tags&quot; : [ &quot;mexican&quot;, &quot;quick&quot;, &quot;easy&quot;, &quot;chicken&quot; ] }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e87856d07beb474c074c5ca&quot;), &quot;title&quot; : &quot;Brown Sugar Meatloaf&quot;, &quot;tags&quot; : [ &quot;groud beef&quot;, &quot;family meal&quot;, &quot;easy&quot; ] }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot;, &quot;tags&quot; : [ &quot;mexican&quot;, &quot;quick&quot;, &quot;easy&quot;, &quot;ground beef&quot; ] }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5edf1d313260aab97ea0d589&quot;), &quot;title&quot; : &quot;Zucchini Brownies&quot;, &quot;tags&quot; : [ &quot;sweets&quot;, &quot;easy&quot; ] }</p>
+</blockquote>
+<p>If we want to reach into objects of an array we use dot <strong>.</strong> notation.</p>
+<pre class="prettyprint">	db.recipes.find({ &quot;ingredients.name&quot;: &quot;egg&quot; }, { &quot;title&quot;: 1 });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5e877cba20a4f574c0aa56da&quot;), &quot;title&quot; : &quot;Pancakes&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5edf1d313260aab97ea0d589&quot;), &quot;title&quot; : &quot;Zucchini Brownies&quot; }</p>
+</blockquote>
+<h3 id="updating-documents">Updating documents</h3>
+<p>To search for a document <code>_id</code>.</p>
+<pre class="prettyprint">	db.examples.find({ &quot;_id&quot;: ObjectId(&quot;5ee69d943260aab97ea0d58d&quot;) });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5ee69d943260aab97ea0d58d&quot;), &quot;title&quot; : &quot;Pizza&quot; }</p>
+</blockquote>
+<p>Change the title.</p>
+<p>db.examples.find({}, { &quot;title&quot;: 1 });</p>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5ee69e393260aab97ea0d58e&quot;), &quot;title&quot; : &quot;Delete me&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5ee69d943260aab97ea0d58d&quot;), &quot;title&quot; : &quot;Pizza&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot; }</p>
+</blockquote>
+<pre class="prettyprint">	db.examples.update({ &quot;title&quot;: &quot;Pizza&quot; }, { $set: { &quot;title&quot;: &quot;Thin crust pizza&quot; }});
+</pre>
+<blockquote>
+<p>WriteResult({ &quot;nMatched&quot; : 1, &quot;nUpserted&quot; : 0, &quot;nModified&quot; : 1 })</p>
+</blockquote>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5ee69e393260aab97ea0d58e&quot;), &quot;title&quot; : &quot;Delete me&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5ee69d943260aab97ea0d58d&quot;), &quot;title&quot; : &quot;Thin crust pizza&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot; }</p>
+</blockquote>
+<p>Add another field in the document.</p>
+<pre class="prettyprint">	db.examples.updateOne({ &quot;title&quot;: &quot;Thin crust pizza&quot; }, { $set: { &quot;vegan&quot;: false }});
+</pre>
+<p>Find that document.</p>
+<pre class="prettyprint">	db.examples.find({ &quot;title&quot;: &quot;Thin crust pizza&quot; });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5ee69d943260aab97ea0d58d&quot;), &quot;title&quot; : &quot;Thin crust pizza&quot;, &quot;vegan&quot; : false }</p>
+</blockquote>
+<p>To remove the new field use <code>$unset</code>.</p>
+<pre class="prettyprint">	db.examples.updateOne({ &quot;title&quot;: &quot;Thin crust pizza&quot; }, { $unset: { &quot;vegan&quot;: 1 }});
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5ee69d943260aab97ea0d58d&quot;), &quot;title&quot; : &quot;Thin crust pizza&quot; }</p>
+</blockquote>
+<h4 id="incrementing-a-field-in-a-document">Incrementing a field in a document</h4>
+<p>Increment the <code>likes_count</code> field in the Tacos recipe.</p>
+<blockquote>
+<p>],<br>
+&quot;likes_count&quot; : 2,<br>
+&quot;prep_time&quot; : 10,<br>
+&quot;rating&quot; : [</p>
+</blockquote>
+<pre class="prettyprint">	db.examples.updateOne({ &quot;title&quot;: &quot;Tacos&quot; }, { $inc: { &quot;likes_count&quot;: 1 }});
+</pre>
+<blockquote>
+<p>],<br>
+&quot;likes_count&quot; : 3,<br>
+&quot;prep_time&quot; : 10,<br>
+&quot;rating&quot; : [</p>
+</blockquote>
+<p><strong>{ $inc: { &quot;likes_count&quot;: 1 }}</strong> means increment by 1.</p>
+<p><strong>{ $inc: { &quot;likes_count&quot;: -1 }}</strong> means increment by -1, in other words decrement by 1.</p>
+<h3 id="working-with-arrays">Working with arrays</h3>
+<p>Add an item to the <strong>likes</strong> array with <code>$push</code>. This adds an item to the end of the array.</p>
+<blockquote>
+<p>],<br>
+&quot;likes&quot; : [<br>
+1,<br>
+415<br>
+],</p>
+</blockquote>
+<pre class="prettyprint">	db.examples.updateOne({ &quot;title&quot;: &quot;Tacos&quot; }, { $push: { &quot;likes&quot;: 60 }});
+</pre>
+<blockquote>
+<p>],<br>
+&quot;likes&quot; : [<br>
+1,<br>
+415,<br>
+60<br>
+],</p>
+</blockquote>
+<p>To remove an item from the array we use <code>$pull</code>.</p>
+<pre class="prettyprint">	db.examples.updateOne({ &quot;title&quot;: &quot;Tacos&quot; }, { $pull: { &quot;likes&quot;: 60 }});
+</pre>
+<blockquote>
+<p>],<br>
+&quot;likes&quot; : [<br>
+1,<br>
+415<br>
+],</p>
+</blockquote>
+<h3 id="deleting-a-document">Deleting a document</h3>
+<pre class="prettyprint">	db.examples.find({}, { &quot;title&quot;: 1  });
+</pre>
+<p>Results:</p>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5ee69e393260aab97ea0d58e&quot;), &quot;title&quot; : &quot;Delete me&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5ee69d943260aab97ea0d58d&quot;), &quot;title&quot; : &quot;Thin crust pizza&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot; }</p>
+</blockquote>
+<p>We want to delete the document with the title &quot;Delete me&quot;.</p>
+<p>You can use <code>.delete()</code> or to be safe and delete only one document, <code>.deleteOne()</code>.</p>
+<pre class="prettyprint">	db.examples.deleteOne({ &quot;_id&quot; : ObjectId(&quot;5ee69e393260aab97ea0d58e&quot;) });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5ee69d943260aab97ea0d58d&quot;), &quot;title&quot; : &quot;Thin crust pizza&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot; }</p>
+</blockquote>
+<h4 id="challenge-no-1">Challenge No. 1</h4>
+<p><strong>Recipes</strong></p>
+<ul>
+<li>Top rated recipes.</li>
+<li>Sort by most popular first.</li>
+<li>Limited to 4 results.</li>
+</ul>
+<pre class="prettyprint">	db.recipes.find({}, {&quot;title&quot;: 1, &quot;rating_avg&quot;: 1 }).sort({ &quot;rating_avg&quot;: -1 }).limit(4);
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5edf1cd43260aab97ea0d588&quot;), &quot;title&quot; : &quot;Apple Pie&quot;, &quot;rating_avg&quot; : 4.8 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e877cba20a4f574c0aa56da&quot;), &quot;title&quot; : &quot;Pancakes&quot;, &quot;rating_avg&quot; : 3.88 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e6fd805fa98021236426a24&quot;), &quot;title&quot; : &quot;Chicken Soft Tacos&quot;, &quot;rating_avg&quot; : 3.71 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot;, &quot;rating_avg&quot; : 3.5 }</p>
+</blockquote>
+<h4 id="challenge-no-2">Challenge No. 2</h4>
+<ul>
+<li>Bring back recipes tagged with &quot;Mexican&quot;.</li>
+<li>Sort by most Popular first.</li>
+<li>Limited to 4 documents.</li>
+</ul>
+<pre class="prettyprint">	db.recipes.find({ &quot;tags&quot;: &quot;mexican&quot; }, {&quot;title&quot;: 1, &quot;rating_avg&quot;: 1 }).sort({ &quot;rating_avg&quot;: -1 }).limit(4);
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5e6fd805fa98021236426a24&quot;), &quot;title&quot; : &quot;Chicken Soft Tacos&quot;, &quot;rating_avg&quot; : 3.71 }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot;, &quot;rating_avg&quot; : 3.5 }</p>
+</blockquote>
+<h4 id="challenge-no-3">Challenge No. 3</h4>
+<ul>
+<li>Bring back all recipes liked by user id 1.</li>
+<li>Sorted by title.</li>
+<li>No limit.</li>
+</ul>
+<pre class="prettyprint">	db.recipes.find({ &quot;likes&quot;: 1 }, {&quot;title&quot;: 1 }).sort({ &quot;title&quot;: 1 });
+</pre>
+<p>or</p>
+<pre class="prettyprint">	db.recipes.find({ &quot;likes&quot;: { $all: [1] }}, {&quot;title&quot;: 1 }).sort({ &quot;title&quot;: 1 });
+</pre>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5edf1cd43260aab97ea0d588&quot;), &quot;title&quot; : &quot;Apple Pie&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e6fd805fa98021236426a24&quot;), &quot;title&quot; : &quot;Chicken Soft Tacos&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e878f5220a4f574c0aa56db&quot;), &quot;title&quot; : &quot;Maple Smoked Salmon&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e877cba20a4f574c0aa56da&quot;), &quot;title&quot; : &quot;Pancakes&quot; }<br>
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot; }</p>
+</blockquote>
+<p>If we want to see recipes liked by user id's 1 and 35.</p>
+<pre class="prettyprint">	db.recipes.find({ &quot;likes&quot;: { $all: [1, 35] }}, {&quot;title&quot;: 1 }).sort({ &quot;title&quot;: 1 });
+</pre>
+<p>Only brings back.</p>
+<blockquote>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5e877cba20a4f574c0aa56da&quot;), &quot;title&quot; : &quot;Pancakes&quot; }</p>
+</blockquote>
+<p>This is the only recipe liked by both user id's 1 &amp; 35.</p>
+<pre class="prettyprint">	db.recipes.find({ &quot;likes&quot;: { $in: [1, 35] }}, {&quot;title&quot;: 1 }).sort({ &quot;title&quot;: 1 });
+</pre>
+<p>This returns all recipes liked by user id's 1 &amp; 35.</p>
+<p>{ &quot;_id&quot; : ObjectId(&quot;5edf1cd43260aab97ea0d588&quot;), &quot;title&quot; : &quot;Apple Pie&quot; }
+{ &quot;_id&quot; : ObjectId(&quot;5e6fd805fa98021236426a24&quot;), &quot;title&quot; : &quot;Chicken Soft Tacos&quot; }
+{ &quot;_id&quot; : ObjectId(&quot;5e878f5220a4f574c0aa56db&quot;), &quot;title&quot; : &quot;Maple Smoked Salmon&quot; }
+{ &quot;_id&quot; : ObjectId(&quot;5e877cba20a4f574c0aa56da&quot;), &quot;title&quot; : &quot;Pancakes&quot; }
+{ &quot;_id&quot; : ObjectId(&quot;5e5e9c470d33e9e8e3891b35&quot;), &quot;title&quot; : &quot;Tacos&quot; }</p>
+<h3 id="data-and-schema-modeling">Data and Schema modeling</h3>
+<blockquote>
+<p>Data that is accessed together should be stored together — MongoDB</p>
+</blockquote>
+<p>This means that you shouldn't have a user's collection and an address collection. You should think of a way to join both collections into 1. if you are going to access a user you are more than likely going to want their address details at the same time.</p>
+<p>You should think differently about 1 to 1 or 1 to many relationships in databases.</p>
+<p>In my Record DB I could add an artist's records into an array within the artist document but seeing as some artists have a large number of records it might be more efficient to store the records in a different collection. This means that when I search for an artist that has a large number of records I am not bringing back all of their records each time I query that artist.</p>
+<h3 id="basic-indexing">Basic indexing</h3>
+<p>Having a basic understanding of indexes can make a big difference when querying your data.</p>
+<p>When you have an index it will stop you from querying every document in your collection and only search for a single document. We have seen how this can dramatically increase the speed of your query.</p>
+<p>Do this search on artists in record-db.</p>
+<pre class="prettyprint">	db.artists.find({ &quot;lastname&quot;: &quot;Dylan&quot; }, {&quot;name&quot;: 1 });
+</pre>
+<p>returns,</p>
+<blockquote>
+<p>{ &quot;_id&quot; : &quot;5f3defa4163278d1ac061cfb&quot;, &quot;name&quot; : &quot;Bob Dylan&quot; }</p>
+</blockquote>
+<p>Now check the execution of the query.</p>
+<pre class="prettyprint">	db.artists.find({ &quot;lastname&quot;: &quot;Dylan&quot; }, {&quot;name&quot;: 1 }).explain(&quot;executionStats&quot;);
+</pre>
+<p>It brings back a large amount of information but we are only interested in,</p>
+<blockquote>
+<p>&quot;executionStats&quot; : {<br>
+&quot;executionSuccess&quot; : true,<br>
+&quot;nReturned&quot; : 1,<br>
+&quot;executionTimeMillis&quot; : 1,<br>
+&quot;totalKeysExamined&quot; : 0,<br>
+&quot;totalDocsExamined&quot; : 616,</p>
+</blockquote>
+<p>We search through 616 documents in our collection. Imagine if we had thousands of documents in our collection?</p>
+<p>We can create an index with the following.</p>
+<pre class="prettyprint">	db.artists.createIndex({ &quot;name&quot;: 1 });
+</pre>
+<p>This time search for an artist's name.</p>
+<pre class="prettyprint">	db.artists.find({ &quot;name&quot;: &quot;Bob Dylan&quot; }, {&quot;name&quot;: 1 }).explain(&quot;executionStats&quot;);
+</pre>
+<blockquote>
+<p>&quot;executionStats&quot; : {<br>
+&quot;executionSuccess&quot; : true,<br>
+&quot;nReturned&quot; : 3,<br>
+&quot;executionTimeMillis&quot; : 0,<br>
+&quot;totalKeysExamined&quot; : 3,<br>
+&quot;totalDocsExamined&quot; : 3,</p>
+</blockquote>
+<p>The number of documents searched has been reduced to 3 because we built an index for the <strong>name</strong> field.</p>
+<p>This shows you the benefits of indexing.</p>
+<p>Use the <code>db.artists.</code> and tab twice. This will show you all of the commands you can run on the artists collection.</p>
+<p>You will see.</p>
+<pre class="prettyprint">	db.artists.getIndex();
+</pre>
+<p>and this will show you a list of all your indexes, in our case,</p>
+<blockquote>
+<p>[<br>
+{<br>
+&quot;v&quot; : 2,<br>
+&quot;key&quot; : {<br>
+&quot;_id&quot; : 1<br>
+},<br>
+&quot;name&quot; : &quot;<em>id</em>&quot;,<br>
+&quot;ns&quot; : &quot;record-db.artists&quot;<br>
+},<br>
+{<br>
+&quot;v&quot; : 2,<br>
+&quot;key&quot; : {<br>
+&quot;name&quot; : 1<br>
+},<br>
+&quot;name&quot; : &quot;name_1&quot;,<br>
+&quot;ns&quot; : &quot;record-db.artists&quot;<br>
+}<br>
+]</p>
+</blockquote>
+<p>In this case we have the default index on <code>_id</code> and we also have one on <code>name</code>.</p>
+<p>If we want to drop and index we can run.</p>
+<pre class="prettyprint">	db.artists.dropIndex({ &quot;name_1&quot; });
+</pre>
+<h3 id="coding-with-mongodb-using-nodejs">Coding with MongoDB using Node.js</h3>
+<p>Install Node.js in your project.</p>
+<pre class="prettyprint">	npm install mongodb --save
+</pre>
+<p>I have installed the examples in <strong>D:\WebDev\Node\examples\node-mongo-db-coding</strong></p>
+<h3 id="backups">Backups</h3>
+<p>The simplest of backup methods is to go to your database folder and stop people from writing into the files.</p>
+<p>In mongo shell.</p>
+<pre class="prettyprint">	db.fsyncLock();
+</pre>
+<p>You get the message.</p>
+<blockquote>
+<p>{<br>
+&quot;info&quot; : &quot;now locked against writes, use db.fsyncUnlock() to unlock&quot;,<br>
+&quot;lockCount&quot; : NumberLong(1),<br>
+&quot;seeAlso&quot; : &quot;http://dochub.mongodb.org/core/fsynccommand&quot;,<br>
+&quot;ok&quot; : 1<br>
+}</p>
+</blockquote>
+<p>Now unlock.</p>
+<pre class="prettyprint">	db.fsyncUnlock();
+</pre>
+<p>returns the message.</p>
+<blockquote>
+<p>{ &quot;info&quot; : &quot;fsyncUnlock completed&quot;, &quot;lockCount&quot; : NumberLong(0), &quot;ok&quot; : 1 }</p>
+</blockquote>
+<p>**Note: ** I got a *file being used* message so I had to skip backing that file up. I won't use this method of backing up again. Instead I'll shut the server down.</p>
+<h3 id="stopping-the-mongodb-server">Stopping the MongoDB server</h3>
+<p>Open Powershell as administrator</p>
+<pre class="prettyprint">	net stop MongoDB
+</pre>
+<p>Now you can safely do backups. In production you would do this out of hours.</p>
+<p>To restart the MongoDB server you would issue a <strong>net start MongoDB</strong>. I did this but it didn't start up properly. I ended up restarting my PC.</p>
+<h4 id="mongodump">mongodump</h4>
+<p><strong>mongodump</strong> will dump the contents of all databases into a dump folder in your current folder.</p>
+<p>There are a number of other options with mongodump, see the help.</p>
+<pre class="prettyprint">	mongodump --help
+</pre>
+<p>You can backup a particular database with mongodump.</p>
+<p><strong>mongorestore</strong> will restore the dump folder or the particular database you dumped.</p>
+
+
+
+</div><!-- starter-template -->
+</div><!-- /.container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"/>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+</body>
+</html>

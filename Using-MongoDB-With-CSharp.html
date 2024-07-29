@@ -1,101 +1,386 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>MongoDB</title>
-<link href="assets/css/bootstrap.css" rel="stylesheet">
-<!-- Custom styles for this template -->
-<link href="assets/css/starter-template.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?lang=css&amp;skin=sunburst"></script>
-<style type="text/css">
-html {
-	font-size: 90.0%;
+<title>Using-MongoDB-With-CSharp.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
 }
 
-h2 {
-	margin-top: 60px;
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
 }
 
-h4, h3 {
-	padding-top: 40px!;		
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
 }
 
-p {
-	font-size: 1.2em;
-}
-h4 {
-	font-size: 1.4em;
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
 }
 
-img, pre.prettyprint {
-	margin-top: 1.5em;
-	margin-bottom: 1.5em;
+body.showEditorSelection .code-line {
+	position: relative;
 }
-h1, h2, h3, h4, h5, h6 {
-    color:#007bff;
 
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
 }
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
 blockquote {
-    border-left: 4px solid #999;
-    padding-left: 1rem;
-    page-break-inside: avoid;
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
 }
-:target:before {
-  content: "";
-  display: block;
-  height: 80px; /* adjust this value to your needs */
-  margin: -80px 0 0; /* this should be a negative value of the height above */
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
 }
 </style>
-<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="#">Using MongoDB with C#</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
-                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">MongoDB <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-</header>
-<div class="container">
-    <div class="starter-template">
-
-
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
 <h1 id="using-mongodb-with-c">Using MongoDB with C#</h1>
 <p>Video tutorial: IAmTimCorey - How to Connect MongoDB to C# the Easy Way (Sandbox\Mongo\MongoDbDemoApp).</p>
 <p>We will create an ASP.Net Core 6.0 console application named <strong>MongoDbDemoApp</strong>.</p>
 <p><strong>Note:</strong> in this solution we are using the file scope not block scope. This isn't the way I usually work.</p>
 <p>The first thing we need to do is to add the MongoDB.Driver NuGet package to our solution.</p>
 <p>Add the <strong>using</strong> statement for the driver.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Driver;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Driver;
 </div></code></pre>
 <p>Create a class named <strong>PersonModel</strong> to your <strong>MongoDBDemo</strong> project. Add the namespace MongoDBDemo.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">namespace</span> <span class="hljs-title">MongoDBDemo</span>;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">namespace</span> <span class="hljs-title">MongoDBDemo</span>;
 </div></code></pre>
 <p>Add the class details. and we add two attributes.</p>
 <p>When you type in <code>[BsonId]</code> you will need to add the using statement, <code>using MongoDB.Bson.Serialization.Attributes;</code>.</p>
 <p>When you add in the next attribute <code>[BsonRepresentation(BsonType.ObjectId)]</code> you will need to add another using statement, <code>using MongoDB.Bson;</code>.</p>
 <p>Your class should look like this.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Bson;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Bson;
     <span class="hljs-keyword">using</span> MongoDB.Bson.Serialization.Attributes;
 
     <span class="hljs-keyword">namespace</span> <span class="hljs-title">MongoDBDemo</span>;
@@ -114,7 +399,7 @@ blockquote {
 <h2 id="connection-strings">Connection strings</h2>
 <p>Normally we would store the connection string in <code>appsettings.json</code> but for now we will store the connection string in program.cs.</p>
 <p>The code below is our full example.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Driver;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Driver;
     <span class="hljs-keyword">using</span> MongoDBDemo;
 
     <span class="hljs-keyword">string</span> connectionString = <span class="hljs-string">"mongodb://127.0.0.1:27017"</span>;
@@ -138,18 +423,18 @@ blockquote {
 <p><strong>Note:</strong> we don't use a password with the local MongoDB.</p>
 <p>Our database name is <strong>AddressBook</strong> and our collection name (table) is <strong>people</strong>. Both the AddressBook and people will be created by our <code>InsertOneAsync()</code> method if they don't already exist.</p>
 <p>we create a database client with our connection string and then create a database connection with <code>GetDatabase</code>. Then we tell MongoDB what collection we will be using with <code>GetCollection()</code> and we give the collection a type with <code>&lt;PersonModel&gt;</code>.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> MongoClient(connectionString);
+<pre class="hljs"><code><div>    <span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> MongoClient(connectionString);
     <span class="hljs-keyword">var</span> db = client.GetDatabase(databaseName);
     <span class="hljs-keyword">var</span> collection = db.GetCollection&lt;PersonModel&gt;(collectionName);
 </div></code></pre>
 <p>We create a person object and use the following to add one document to our MongoDB database.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">var</span> person = <span class="hljs-keyword">new</span> PersonModel { FirstName = <span class="hljs-string">"Alan"</span>, LastName = <span class="hljs-string">"Robson"</span> };
+<pre class="hljs"><code><div>    <span class="hljs-keyword">var</span> person = <span class="hljs-keyword">new</span> PersonModel { FirstName = <span class="hljs-string">"Alan"</span>, LastName = <span class="hljs-string">"Robson"</span> };
 
     <span class="hljs-keyword">await</span> collection.InsertOneAsync(person);
 </div></code></pre>
 <p>As we said previously we have now created a database and a collection in the database. We have also added one document to the collection.</p>
 <p>Now, we want to be able to view documents from the collection we just created.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">var</span> results = <span class="hljs-keyword">await</span> collection.FindAsync(_ =&gt; <span class="hljs-literal">true</span>);
+<pre class="hljs"><code><div>    <span class="hljs-keyword">var</span> results = <span class="hljs-keyword">await</span> collection.FindAsync(_ =&gt; <span class="hljs-literal">true</span>);
 
     <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> result <span class="hljs-keyword">in</span> results.ToList())
     {
@@ -166,7 +451,7 @@ blockquote {
 <p>With a little bit of code we have gained a lot of functionality. We can expand on this by adding a class library into a new Project named <strong>MongoDataAccess</strong>.</p>
 <p>Create two new folders in this project, one named <strong>DataAccess</strong> and the other <strong>Models</strong>.</p>
 <p>In the Models folder create a new class named <strong>UserModel</strong>.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Bson;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Bson;
     <span class="hljs-keyword">using</span> MongoDB.Bson.Serialization.Attributes;
 
     <span class="hljs-keyword">namespace</span> <span class="hljs-title">MongoDataAccess.Models</span>;
@@ -183,7 +468,7 @@ blockquote {
 </div></code></pre>
 <p>This is similar code to the PersonModel class we created previously. Once again you have to add the MongoDB.Driver package to this project.</p>
 <p>Create a new model named <strong>ChoreModel</strong>.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Bson.Serialization.Attributes;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Bson.Serialization.Attributes;
     <span class="hljs-keyword">using</span> MongoDB.Bson;
     
     <span class="hljs-keyword">namespace</span> <span class="hljs-title">MongoDataAccess.Models</span>;
@@ -201,7 +486,7 @@ blockquote {
 </div></code></pre>
 <p>We are creating a chore project to keep a database of a particular users chores.</p>
 <p>Now create a final model named <strong>ChoreHistoryModel</strong>.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Bson.Serialization.Attributes;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDB.Bson.Serialization.Attributes;
     <span class="hljs-keyword">using</span> MongoDB.Bson;
 
     <span class="hljs-keyword">namespace</span> <span class="hljs-title">MongoDataAccess.Models</span>;
@@ -233,7 +518,7 @@ blockquote {
 <p>We have two constructors in this class. One is empty and the other takes on a ChoreModel and you can use this to save an object of ChoreModel.</p>
 <p>In our DataAccess folder we are going to create a data access class named <strong>ChoreDataAccess</strong>.</p>
 <p>Add this code to your class.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">using</span> MongoDataAccess.Models;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDataAccess.Models;
     <span class="hljs-keyword">using</span> MongoDB.Driver;
     
     <span class="hljs-keyword">namespace</span> <span class="hljs-title">MongoDataAccess.DataAccess</span>;
@@ -244,20 +529,20 @@ blockquote {
     }
 </div></code></pre>
 <p>Now we will add some constants to connect to our database.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> ConnectionString = <span class="hljs-string">"mongodb://127.0.0.1:27017"</span>;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> ConnectionString = <span class="hljs-string">"mongodb://127.0.0.1:27017"</span>;
     <span class="hljs-keyword">private</span> <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> DatabaseName = <span class="hljs-string">"choredb"</span>;
     <span class="hljs-keyword">private</span> <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> ChoreCollection = <span class="hljs-string">"chore_chart"</span>;
     <span class="hljs-keyword">private</span> <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> UserCollection = <span class="hljs-string">"users"</span>;
     <span class="hljs-keyword">private</span> <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> ChoreHistoryCollection = <span class="hljs-string">"chore_history"</span>;
 </div></code></pre>
 <p>In <code>program.cs</code> we are using this setup.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> MongoClient(connectionString);
+<pre class="hljs"><code><div>    <span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> MongoClient(connectionString);
     <span class="hljs-keyword">var</span> db = client.GetDatabase(databaseName);
     <span class="hljs-keyword">var</span> collection = db.GetCollection&lt;PersonModel&gt;(collectionName);
 </div></code></pre>
 <p>We have to do this for every collection. Instead of doing this every single time for every single call we are going to create an <strong>IMongoCollection&lt;T&gt;</strong>  of type <strong>T</strong> called <code>ConnectToMongo&lt;T&gt;(in string collection)</code>. This is using generics.</p>
 <p>What we are saying is that with generics we are passing in a collection of type <strong>T</strong> and we want to pass back a collection of objects of that type. This allows us to pass in three different types with the same code. In our case, <code>ChoreHistoryModel</code>, <code>ChoreModel</code> and <code>UserModel</code>.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">private</span> IMongoCollection&lt;T&gt; ConnectToMongo&lt;T&gt;(<span class="hljs-keyword">in</span> <span class="hljs-keyword">string</span> collection)
+<pre class="hljs"><code><div>    <span class="hljs-keyword">private</span> IMongoCollection&lt;T&gt; ConnectToMongo&lt;T&gt;(<span class="hljs-keyword">in</span> <span class="hljs-keyword">string</span> collection)
     {
         <span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> MongoClient(ConnectionString);
         <span class="hljs-keyword">var</span> db = client.GetDatabase(DatabaseName);
@@ -267,7 +552,7 @@ blockquote {
 <p>This allows us to get our data using one private method.</p>
 <h2 id="accessing-our-collections">Accessing our collections</h2>
 <p>We can now access our data by creating some methods.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;List&lt;UserModel&gt;&gt; GetAllUsers()
+<pre class="hljs"><code><div>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;List&lt;UserModel&gt;&gt; GetAllUsers()
     {
         <span class="hljs-keyword">var</span> usersCollection = ConnectToMongo&lt;UserModel&gt;(UserCollection);
         <span class="hljs-keyword">var</span> results = <span class="hljs-keyword">await</span> usersCollection.FindAsync(_ =&gt; <span class="hljs-literal">true</span>);
@@ -280,7 +565,7 @@ blockquote {
 <p>We can also create another method to <strong>GetAllChores()</strong> with basically the same code as we used in GetAllUsers().</p>
 <h3 id="filtering-a-collection">Filtering a collection</h3>
 <p>Now we want to create a method that filters documents so that we can get all chores for a particular user. Once again we are using the same code with minor modifications.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;List&lt;ChoreModel&gt;&gt; GetAllChoresForAUser(UserModel user)
+<pre class="hljs"><code><div>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;List&lt;ChoreModel&gt;&gt; GetAllChoresForAUser(UserModel user)
     {
         <span class="hljs-keyword">var</span> choresCollection = ConnectToMongo&lt;ChoreModel&gt;(ChoreCollection);
         <span class="hljs-keyword">var</span> results = <span class="hljs-keyword">await</span> choresCollection.FindAsync(c =&gt; c.AssignedTo.Id == user.Id);
@@ -290,7 +575,7 @@ blockquote {
 <p>This is the way we do a one to many filter of documents. <code>FindAsync(c =&gt; c.AssignedTo.Id == user.Id)</code> is saying get the sub Id's of the chore collection that are matched to the user Id.</p>
 <h3 id="inserting-a-document">Inserting a document</h3>
 <p>We are going to build a method to create a user. Once again we will use the same connection line from previous methods to save us some time.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> Task <span class="hljs-title">CreateUser</span>(<span class="hljs-params">UserModel user</span>)</span>
+<pre class="hljs"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> Task <span class="hljs-title">CreateUser</span>(<span class="hljs-params">UserModel user</span>)</span>
     {
         <span class="hljs-keyword">var</span> usersCollection = ConnectToMongo&lt;UserModel&gt;(UserCollection);
         <span class="hljs-keyword">return</span> usersCollection.InsertOneAsync(user);
@@ -299,7 +584,7 @@ blockquote {
 <p>We can do the same to insert a chore.</p>
 <h3 id="updating-a-document">Updating a document</h3>
 <p>We can update a chore with the following code.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> Task <span class="hljs-title">UpdateChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
+<pre class="hljs"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> Task <span class="hljs-title">UpdateChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
     {
         <span class="hljs-keyword">var</span> choresCollection = ConnectToMongo&lt;ChoreModel&gt;(ChoreCollection);
         <span class="hljs-keyword">var</span> filter = Builders&lt;ChoreModel&gt;.Filter.Eq(<span class="hljs-string">"Id"</span>, chore.Id);
@@ -310,7 +595,7 @@ blockquote {
 <p>In this case it can either be an update or an insert.</p>
 <p>This operation isn't like SQL Server that will just update the new fields. MongoDB is more efficient and doesn't bother to replace the fields but pulls a document out of the collection and replaces it with a new document.</p>
 <h3 id="deleting-a-document">Deleting a document</h3>
-<pre class="prettyprint"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> Task <span class="hljs-title">DeleteChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
+<pre class="hljs"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> Task <span class="hljs-title">DeleteChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
     {
         <span class="hljs-keyword">var</span> choresCollection = ConnectToMongo&lt;ChoreModel&gt;(ChoreCollection);
         <span class="hljs-keyword">return</span> choresCollection.DeleteOneAsync(c =&gt; c.Id == chore.Id);
@@ -319,7 +604,7 @@ blockquote {
 <p>What this is doing is saying delete one document where the Id's match.</p>
 <p>We now have a full CRUD access to MongoDB.</p>
 <h4 id="choredataaccesscs">ChoreDataAccess.cs</h4>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">using</span> MongoDataAccess.Models;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDataAccess.Models;
     <span class="hljs-keyword">using</span> MongoDB.Driver;
 
     <span class="hljs-keyword">namespace</span> <span class="hljs-title">MongoDataAccess.DataAccess</span>;
@@ -390,11 +675,11 @@ blockquote {
 <p>We will go back to our <strong>MongoDBDemo</strong> project and comment out our database connection code and the <code>person</code> code in the Program.cs file.</p>
 <p>We also need to change our dependencies by adding our <strong>MongoDataAccess</strong> library. We do this by adding a project reference to the library.</p>
 <p>We have to add the following <strong>using</strong> statements.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">using</span> MongoDataAccess.DataAccess;
+<pre class="hljs"><code><div>    <span class="hljs-keyword">using</span> MongoDataAccess.DataAccess;
     <span class="hljs-keyword">using</span> MongoDataAccess.Models;
 </div></code></pre>
 <h3 id="inserting-a-user">Inserting a User</h3>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">var</span> db = <span class="hljs-keyword">new</span> ChoreDataAccess();
+<pre class="hljs"><code><div>    <span class="hljs-keyword">var</span> db = <span class="hljs-keyword">new</span> ChoreDataAccess();
 
     <span class="hljs-keyword">await</span> db.CreateUser(<span class="hljs-keyword">new</span> UserModel() { FirstName = <span class="hljs-string">"Alan"</span>, LastName = <span class="hljs-string">"Robson"</span> });
 </div></code></pre>
@@ -402,7 +687,7 @@ blockquote {
 <p><strong>Note:</strong> all of our database methods are <strong>async</strong> methods so we need to use the <code>await</code> keyword in front of our database interactions.</p>
 <h3 id="inserting-a-chore">Inserting a Chore</h3>
 <p>With our database connection still open we can add a chore to the current user. First, we must get our users collection and in our case we are going to select the first user to attach a chore to.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-keyword">var</span> users = <span class="hljs-keyword">await</span> db.GetAllUsers();
+<pre class="hljs"><code><div>    <span class="hljs-keyword">var</span> users = <span class="hljs-keyword">await</span> db.GetAllUsers();
 
     <span class="hljs-keyword">var</span> chore = <span class="hljs-keyword">new</span> ChoreModel()
     {
@@ -415,7 +700,7 @@ blockquote {
 </div></code></pre>
 <h3 id="completing-chore-history">Completing Chore history</h3>
 <p>We also need to update the chore if that chore has been completed. We can do this with.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">CompleteChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
+<pre class="hljs"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">CompleteChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
     {
         <span class="hljs-keyword">var</span> choresCollection = ConnectToMongo&lt;ChoreModel&gt;(ChoreCollection);
         <span class="hljs-keyword">var</span> filter = Builders&lt;ChoreModel&gt;.Filter.Eq(<span class="hljs-string">"Id"</span>, chore.Id);
@@ -426,7 +711,7 @@ blockquote {
     }
 </div></code></pre>
 <p>This code is adequate but seeing as we are using two collections we should do some exception checking. A better way would be to add the following code using transactions so that we can roll back if something goes wrong.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">CompleteChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
+<pre class="hljs"><code><div>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task <span class="hljs-title">CompleteChore</span>(<span class="hljs-params">ChoreModel chore</span>)</span>
     {
         <span class="hljs-keyword">var</span> client = <span class="hljs-keyword">new</span> MongoClient(ConnectionString);
         <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> session = <span class="hljs-keyword">await</span> client.StartSessionAsync();
@@ -456,7 +741,7 @@ blockquote {
 <p>To get around that we can use MongoDB Atlas in the cloud where we are using three clusters and now the transaction will work.</p>
 <p><strong>Note:</strong> in the transaction version we aren't using the <code>ConnectToMongo&lt;&gt;()</code> method. This is because we are using a <code>using</code> statement to create a session.</p>
 <p>We can test the CompleteChore method with this code.</p>
-<pre class="prettyprint"><code><div>    <span class="hljs-comment"><span class="hljs-doctag">///</span>/ Update a chore</span>
+<pre class="hljs"><code><div>    <span class="hljs-comment"><span class="hljs-doctag">///</span>/ Update a chore</span>
     <span class="hljs-keyword">var</span> chores = <span class="hljs-keyword">await</span> db.GetAllChores();
 
     <span class="hljs-keyword">var</span> newChore = chores.First();
@@ -477,7 +762,7 @@ FirstName: &quot;Alan&quot;<br>
 LastName: &quot;Robson&quot;</p>
 </blockquote>
 <h3 id="getting-a-user-and-their-chores">Getting a user and their chores</h3>
-<pre class="prettyprint"><code><div>    <span class="hljs-comment">// View a user and their chores</span>
+<pre class="hljs"><code><div>    <span class="hljs-comment">// View a user and their chores</span>
     <span class="hljs-keyword">var</span> users = <span class="hljs-keyword">await</span> db.GetAllUsers();
     
     <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> user <span class="hljs-keyword">in</span> users.ToList())
@@ -507,20 +792,5 @@ LastName: &quot;Robson&quot;</p>
 <p>We also need to use LINQ to query more than one collection at a time and return one to many results.</p>
 <p>This tutorial is a continuation of the <em>Intro to MongoDB with C#</em> (Sandbox\Mongo\MongoDbDemo) tutorial I did. Both tutorials created a data access layer but in the examples above we are using async functions to retrieve our data which is more efficient.</p>
 
-
-
-</div><!-- starter-template -->
-</div><!-- /.container -->
-
-
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"/>
-<script>hljs.initHighlightingOnLoad();</script>
-
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/bootstrap.min.js"></script>
 </body>
 </html>
